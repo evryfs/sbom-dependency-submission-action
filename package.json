@@ -25,7 +25,8 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.9.0"
+    "@actions/core": "^1.9.0",
+    "@github/dependency-submission-toolkit": "^1.2.0"
   },
   "devDependencies": {
     "@types/node": "^16.10.5",
