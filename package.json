@@ -26,6 +26,7 @@
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.9.0",
+    "@cyclonedx/bom": "^3.10.0",
     "@github/dependency-submission-toolkit": "github/dependency-submission-toolkit#main"
   },
   "devDependencies": {
