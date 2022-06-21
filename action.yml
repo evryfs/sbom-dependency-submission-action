@@ -1,11 +1,10 @@
 name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+description: 'Import SBOMs into GitHub dependency submission API'
+author: 'evryfs'
 inputs:
-  milliseconds: # change this
+  sbom-file:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'Path to SBOM file'
 runs:
   using: 'node16'
   main: 'dist/index.js'
