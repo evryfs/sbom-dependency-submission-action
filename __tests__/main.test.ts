@@ -1,11 +1,16 @@
 import {expect, test} from '@jest/globals'
-import {parseSbomFile} from '../src/main'
+import {process} from '../src/main'
 
 test('testParsing', async () => {
   console.log('dummy')
-  const bom = parseSbomFile('data/sample.json')
-  expect(bom).not.toBeNull()
+  //const bom = parseSbomFile('data/sample.json')
+  //expect(bom).not.toBeNull()
 })
+
+test('runAll', async () => {
+  await process('data/valid-bom-1.4.json')
+})
+
 /*
 test('throws invalid number', async () => {
   const input = parseInt('foo', 10)
