@@ -8,7 +8,8 @@ test('testParsing', async () => {
 })
 
 test('runAll', async () => {
-  await process('data/valid-bom-1.4.json')
+  //await process('data/valid-bom-1.4.json')
+  await process('/tmp/bom.json')
 })
 
 /*
