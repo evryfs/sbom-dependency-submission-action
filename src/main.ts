@@ -42,9 +42,10 @@ function map(bom: cdx.Models.Bom): Snapshot {
   snapshot.addManifest(buildTarget)
 
   // https://github.com/CycloneDX/cyclonedx-javascript-library/issues/86
-  const packages: Package[] = bom.components.sorted().map(component => {
-    const packageUrl: PackageURL = component.purl as PackageURL
-    return new Package(packageUrl)
+  // hacky hacky so that we can use the existing Bom structure
+  const realComponents = bom.components as unknown as cdx.Models.Component[]
+  const packages: Package[] = realComponents.map(component => {
+    return mapComponentToPackage(component)
   })
 
   const packageCache = new PackageCache()
@@ -54,6 +55,17 @@ function map(bom: cdx.Models.Bom): Snapshot {
   }
 
   return snapshot
+}
+
+function mapComponentToPackage(component: cdx.Models.Component): Package {
+  const packageUrl: PackageURL = component.purl as PackageURL
+  const ghPackage = new Package(packageUrl)
+  // @ts-ignore
+  for (const dependency of component.components || []) {
+    const theShit: cdx.Models.Component = dependency
+    ghPackage.dependsOn(mapComponentToPackage(theShit))
+  }
+  return ghPackage
 }
 
 function parseSbomFile(sbomFile: string): cdx.Models.Bom {
