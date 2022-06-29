@@ -1,8 +1,8 @@
-import { RunOptions, RunTarget } from 'github-action-ts-run-api'
-import { Bom, Component } from '@cyclonedx/cyclonedx-library/src/models'
-import { expect, test, afterEach, jest } from '@jest/globals'
-import { map, parseSbomFile, process, run, SBom } from '../src/main'
-import { Manifest, Snapshot } from '@github/dependency-submission-toolkit'
+import {RunOptions, RunTarget} from 'github-action-ts-run-api'
+import {Bom, Component} from '@cyclonedx/cyclonedx-library/src/models'
+import {expect, test, afterEach, jest} from '@jest/globals'
+import {map, parseSbomFile, process, run, SBom} from '../src/main'
+import {Manifest, Snapshot} from '@github/dependency-submission-toolkit'
 
 describe('Parse', () => {
   afterEach(() => {
@@ -17,7 +17,8 @@ describe('Parse', () => {
     bom = parseSbomFile('__tests__/data/dropwizard-1.3.15-sbom.json')
     expect(bom).not.toBeNull()
     expect(bom.metadata?.authors).not.toBeNull()
-    const typedComponents: Component[] = bom.components as unknown as Component[]
+    const typedComponents: Component[] =
+      bom.components as unknown as Component[]
     expect(typedComponents.length).toBe(167)
   })
 })
@@ -35,7 +36,8 @@ describe('Map to GH dep submission', () => {
 
     expect(Object.keys(snapshot.manifests).length).toBe(1)
 
-    const manifest: Manifest = snapshot.manifests[Object.keys(snapshot.manifests)[0]]
+    const manifest: Manifest =
+      snapshot.manifests[Object.keys(snapshot.manifests)[0]]
     expect(manifest.directDependencies().length).toBe(167)
     expect(manifest.indirectDependencies().length).toBe(0) // dropwizard example has all deps listed as direct
   })
@@ -48,7 +50,8 @@ describe('Map to GH dep submission', () => {
 
     expect(Object.keys(snapshot.manifests).length).toBe(1)
 
-    const manifest: Manifest = snapshot.manifests[Object.keys(snapshot.manifests)[0]]
+    const manifest: Manifest =
+      snapshot.manifests[Object.keys(snapshot.manifests)[0]]
     expect(manifest.directDependencies().length).toBe(903)
     expect(manifest.indirectDependencies().length).toBe(0) // dropwizard example has all deps listed as direct
   })
@@ -56,14 +59,14 @@ describe('Map to GH dep submission', () => {
 
 describe('GitHub action', () => {
   test('no inputs', async () => {
-    const target = RunTarget.asyncFn(run);
+    const target = RunTarget.asyncFn(run)
     const options = RunOptions.create()
       .setInputs({
-        'token': 'noToken'
+        token: 'noToken'
       })
       .setShouldFakeMinimalGithubRunnerEnv(true)
       .setGithubContext({
-        payload: { pull_request: { number: 123 } },
+        payload: {pull_request: {number: 123}},
         repository: 'org/repo',
         job: 'performance-test',
         sha: 'someSha',
@@ -74,15 +77,15 @@ describe('GitHub action', () => {
   })
 
   test('invalid credentials', async () => {
-    const target = RunTarget.asyncFn(run);
+    const target = RunTarget.asyncFn(run)
     const options = RunOptions.create()
       .setInputs({
         'sbom-files': '__tests__/data/dropwizard-1.3.15-sbom.json',
-        'token': 'noToken'
+        token: 'noToken'
       })
       .setShouldFakeMinimalGithubRunnerEnv(true)
       .setGithubContext({
-        payload: { pull_request: { number: 123 } },
+        payload: {pull_request: {number: 123}},
         repository: 'org/repo',
         job: 'performance-test',
         sha: 'someSha',
@@ -90,6 +93,6 @@ describe('GitHub action', () => {
       })
 
     const result = await target.run(options)
-    expect(result.isSuccess).toBe(false)  // should fail with bad credentials
+    expect(result.isSuccess).toBe(false) // should fail with bad credentials
   })
 })
