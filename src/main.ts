@@ -1,9 +1,8 @@
 import * as core from '@actions/core'
+import * as github from '@actions/github'
 import * as cdx from '@cyclonedx/cyclonedx-library'
 import * as fs from 'fs'
-import {PackageURL} from 'packageurl-js'
-import {Detector} from '@github/dependency-submission-toolkit/dist/snapshot'
-
+import { Detector } from '@github/dependency-submission-toolkit/dist/snapshot'
 import {
   PackageCache,
   Package,
@@ -12,64 +11,115 @@ import {
   BuildTarget
 } from '@github/dependency-submission-toolkit'
 
+class SBom extends cdx.Models.Bom {
+  constructor() {
+    super();
+    this.dependencies = []
+  }
+  dependencies: Dependency[]
+}
+
+type Dependency = {
+  ref: string
+  dependsOn: string[]
+}
+
 export async function run(): Promise<void> {
-  try {
-    const sbomFile: string = core.getInput('sbom-file')
-    core.debug(`Processing ${sbomFile} ...`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
-    await process(sbomFile)
-  } catch (error) {
-    if (error instanceof Error) core.setFailed(error.message)
+  const sbomFiles: string[] = core.getMultilineInput('sbom-files')
+  if (sbomFiles?.length) {
+    for (const sbomFile of sbomFiles) {
+      try {
+        core.debug(`Processing ${sbomFile} ...`)
+        await process(sbomFile)
+      } catch (error) {
+        if (error instanceof Error) core.setFailed(error.message)
+      }
+    }
+  } else {
+    core.warning('No SBOM files to process')
   }
 }
 
 export async function process(sbomFile: string): Promise<void> {
-  const snapshot = map(parseSbomFile(sbomFile))
-  await submitSnapshot(snapshot)
+  const snapshot = map(parseSbomFile(sbomFile), sbomFile)
+  try {
+    await submitSnapshot(snapshot, github?.context)
+  } catch (error) {
+    if (error instanceof Error) core.error(error.message)
+    throw error
+  }
 }
 
-function map(bom: cdx.Models.Bom): Snapshot {
+export function map(sbom: any, sbomFilename?: string): Snapshot {
+  const bom: SBom = sbom as SBom
   const detectors = Array.from(bom.metadata.tools.values()).map(tool => {
     return {
       name: tool.name ?? 'unknown',
-      url: '',
-      version: tool.version ?? 'unknown'
+      version: tool.version ?? 'unknown',
+      url: tool.externalReferences?.values[0].url || 'https://'
     } as Detector
   })
-  const detector = detectors.pop() ?? {name: '', url: '', version: ''}
-  const snapshot = new Snapshot(detector)
+  const detector = detectors.pop() ?? { name: '', url: '', version: '' }
 
-  const buildTarget = new BuildTarget('someName')
-  snapshot.addManifest(buildTarget)
+  const scanned: Date | undefined = bom.metadata?.timestamp ?
+    typeof bom.metadata.timestamp === 'string'
+      ? new Date(bom.metadata.timestamp)
+      : bom.metadata.timestamp
+    : undefined
 
-  // https://github.com/CycloneDX/cyclonedx-javascript-library/issues/86
-  // hacky hacky so that we can use the existing Bom structure
-  const realComponents = bom.components as unknown as cdx.Models.Component[]
-  const packages: Package[] = realComponents.map(component => {
-    return mapComponentToPackage(component)
-  })
+  const snap: Snapshot = new Snapshot(
+    detector,
+    github?.context,
+    undefined,
+    scanned)
 
-  const packageCache = new PackageCache()
-  for (const pkg of packages) {
-    packageCache.addPackage(pkg)
-    buildTarget.addBuildDependency(pkg)
+  const buildTarget = new BuildTarget(
+    sbomFilename ||
+    bom.metadata?.component?.swid?.version ||
+    bom.metadata?.component?.version ||
+    'someName'
+  )
+  snap.addManifest(buildTarget)
+
+  const packageCache: PackageCache = new PackageCache()
+  const deps = dependencyForPackage(sbom.metadata.component?.purl, sbom.dependencies)
+  if (!deps.length && sbom.dependencies?.length && bom.components) {
+    // main package url has not defined explicit dependencies in SBOM, add all components
+    bom.components.forEach(c => { if (c.purl) deps.push(c.purl?.toString()) })
+  }
+  for (const dep of deps) {
+    let pkg: Package | undefined = packageCache.lookupPackage(dep)
+    pkg ? buildTarget.addDirectDependency(pkg) : buildTarget.addDirectDependency(packageCache.package(dep))
+
+    addIndirectDeps(dep, sbom, packageCache, buildTarget)
   }
 
-  return snapshot
+  return snap
 }
 
-function mapComponentToPackage(component: cdx.Models.Component): Package {
-  const packageUrl: PackageURL = component.purl as PackageURL
-  const ghPackage = new Package(packageUrl)
-  // @ts-ignore
-  for (const dependency of component.components || []) {
-    const theShit: cdx.Models.Component = dependency
-    ghPackage.dependsOn(mapComponentToPackage(theShit))
+function addIndirectDeps(dep: string, sbom: any, packageCache: PackageCache, buildTarget: BuildTarget) {
+  const indirectDeps = dependencyForPackage(dep, sbom.dependencies)
+  for (const indirectDep of indirectDeps) {
+    let inpkg: Package | undefined = packageCache.lookupPackage(indirectDep)
+    inpkg ? buildTarget.addIndirectDependency(inpkg) : buildTarget.addIndirectDependency(packageCache.package(indirectDep))
+    addIndirectDeps(indirectDep, sbom, packageCache, buildTarget)
   }
-  return ghPackage
 }
 
-function parseSbomFile(sbomFile: string): cdx.Models.Bom {
-  return JSON.parse(fs.readFileSync(sbomFile, 'utf8')) as cdx.Models.Bom
+/**
+ * Find dependencies for a package url
+ * @param purl Package URL
+ * @param deps Dependencies as listed in SBOM
+ * @returns List of package URLs, empty if no dependencies
+ */
+function dependencyForPackage(purl: string | undefined, deps: Dependency[]): string[] {
+  if (!purl) return []
+  const componentDeps = deps?.find(c => c.ref.toString() === purl)
+  return componentDeps?.dependsOn || []
 }
 
-run()
+export function parseSbomFile(sbomFile: string): SBom {
+  return JSON.parse(fs.readFileSync(sbomFile, 'utf8')) as SBom
+}
+
+run().catch(error => core.setFailed(`Failed with ${error.message}`))

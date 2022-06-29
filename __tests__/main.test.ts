@@ -1,39 +1,95 @@
-import {expect, test} from '@jest/globals'
-import {process} from '../src/main'
+import { RunOptions, RunTarget } from 'github-action-ts-run-api'
+import { Bom, Component } from '@cyclonedx/cyclonedx-library/src/models'
+import { expect, test, afterEach, jest } from '@jest/globals'
+import { map, parseSbomFile, process, run } from '../src/main'
+import { Manifest, Snapshot } from '@github/dependency-submission-toolkit'
 
-test('testParsing', async () => {
-  console.log('dummy')
-  //const bom = parseSbomFile('data/sample.json')
-  //expect(bom).not.toBeNull()
+describe('Parse', () => {
+  afterEach(() => {
+    jest.resetModules()
+  })
+
+  test('testParsing', () => {
+    let bom: Bom = parseSbomFile('__tests__/data/valid-bom-1.4.json')
+    expect(bom).not.toBeNull()
+    expect(bom.metadata?.authors).not.toBeNull()
+
+    bom = parseSbomFile('__tests__/data/dropwizard-1.3.15-sbom.json')
+    expect(bom).not.toBeNull()
+    expect(bom.metadata?.authors).not.toBeNull()
+    const typedComponents: Component[] = bom.components as unknown as Component[]
+    expect(typedComponents.length).toBe(167)
+  })
 })
 
-test('runAll', async () => {
-  //await process('data/valid-bom-1.4.json')
-  await process('/tmp/bom.json')
+describe('Map to GH dep submission', () => {
+  afterEach(() => {
+    jest.resetModules()
+  })
+
+  test('testCycloneDXMavenDropwizardExample', () => {
+    const bomfile: string = '__tests__/data/dropwizard-1.3.15-sbom.json'
+    const bom: Bom = parseSbomFile(bomfile)
+    const snapshot: Snapshot = map(bom, bomfile)
+    expect(snapshot).not.toBeNull()
+
+    expect(Object.keys(snapshot.manifests).length).toBe(1)
+
+    const manifest: Manifest = snapshot.manifests[Object.keys(snapshot.manifests)[0]]
+    expect(manifest.directDependencies().length).toBe(167)
+    expect(manifest.indirectDependencies().length).toBe(0) // dropwizard example has all deps listed as direct
+  })
+
+  test('testCycloneDXMavenKeycloakExample', () => {
+    const bomfile: string = '__tests__/data/keycloak-10.0.2-sbom.json'
+    const bom: Bom = parseSbomFile(bomfile)
+    const snapshot: Snapshot = map(bom, bomfile)
+    expect(snapshot).not.toBeNull()
+
+    expect(Object.keys(snapshot.manifests).length).toBe(1)
+
+    const manifest: Manifest = snapshot.manifests[Object.keys(snapshot.manifests)[0]]
+    expect(manifest.directDependencies().length).toBe(903)
+    expect(manifest.indirectDependencies().length).toBe(0) // dropwizard example has all deps listed as direct
+  })
 })
 
-/*
-test('throws invalid number', async () => {
-  const input = parseInt('foo', 10)
-  await expect(wait(input)).rejects.toThrow('milliseconds not a number')
-})
+describe('GitHub action', () => {
+  test('no inputs', async () => {
+    const target = RunTarget.asyncFn(run);
+    const options = RunOptions.create()
+      .setInputs({
+        'token': 'noToken'
+      })
+      .setShouldFakeMinimalGithubRunnerEnv(true)
+      .setGithubContext({
+        payload: { pull_request: { number: 123 } },
+        repository: 'org/repo',
+        job: 'performance-test',
+        sha: 'someSha',
+        ref: 'main'
+      })
+    const result = await target.run(options)
+    expect(result.isSuccess).toBe(true) // no inputs should succeed (writes a warning)
+  })
 
-test('wait 500 ms', async () => {
-  const start = new Date()
-  await wait(500)
-  const end = new Date()
-  var delta = Math.abs(end.getTime() - start.getTime())
-  expect(delta).toBeGreaterThan(450)
-})
+  test('invalid credentials', async () => {
+    const target = RunTarget.asyncFn(run);
+    const options = RunOptions.create()
+      .setInputs({
+        'sbom-files': '__tests__/data/dropwizard-1.3.15-sbom.json',
+        'token': 'noToken'
+      })
+      .setShouldFakeMinimalGithubRunnerEnv(true)
+      .setGithubContext({
+        payload: { pull_request: { number: 123 } },
+        repository: 'org/repo',
+        job: 'performance-test',
+        sha: 'someSha',
+        ref: 'main'
+      })
 
-// shows how the runner will run a javascript action with env / stdout protocol
-test('test runs', () => {
-  process.env['INPUT_MILLISECONDS'] = '500'
-  const np = process.execPath
-  const ip = path.join(__dirname, '..', 'lib', 'main.js')
-  const options: cp.ExecFileSyncOptions = {
-    env: process.env
-  }
-  console.log(cp.execFileSync(np, [ip], options).toString())
+    const result = await target.run(options)
+    expect(result.isSuccess).toBe(false)  // should fail with bad credentials
+  })
 })
-*/
