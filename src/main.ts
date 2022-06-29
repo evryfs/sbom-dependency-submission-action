@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import * as cdx from '@cyclonedx/cyclonedx-library'
 import * as fs from 'fs'
-import { Detector } from '@github/dependency-submission-toolkit/dist/snapshot'
+import {Detector} from '@github/dependency-submission-toolkit/dist/snapshot'
 import {
   PackageCache,
   Package,
@@ -11,9 +11,9 @@ import {
   BuildTarget
 } from '@github/dependency-submission-toolkit'
 
-class SBom extends cdx.Models.Bom {
+export class SBom extends cdx.Models.Bom {
   constructor() {
-    super();
+    super()
     this.dependencies = []
   }
   dependencies: Dependency[]
@@ -50,46 +50,53 @@ export async function process(sbomFile: string): Promise<void> {
   }
 }
 
-export function map(sbom: any, sbomFilename?: string): Snapshot {
-  const bom: SBom = sbom as SBom
-  const detectors = Array.from(bom.metadata.tools.values()).map(tool => {
+export function map(sbom: SBom, sbomFilename?: string): Snapshot {
+  //const bom: SBom = sbom as SBom
+  const detectors = Array.from(sbom.metadata.tools.values()).map(tool => {
     return {
       name: tool.name ?? 'unknown',
       version: tool.version ?? 'unknown',
       url: tool.externalReferences?.values[0].url || 'https://'
     } as Detector
   })
-  const detector = detectors.pop() ?? { name: '', url: '', version: '' }
+  const detector = detectors.pop() ?? {name: '', url: '', version: ''}
 
-  const scanned: Date | undefined = bom.metadata?.timestamp ?
-    typeof bom.metadata.timestamp === 'string'
-      ? new Date(bom.metadata.timestamp)
-      : bom.metadata.timestamp
-    : undefined
+  let scanned: Date | undefined = sbom.metadata?.timestamp
+  if (typeof sbom.metadata.timestamp === 'string') {
+    scanned = new Date(sbom.metadata.timestamp)
+  }
 
   const snap: Snapshot = new Snapshot(
     detector,
     github?.context,
     undefined,
-    scanned)
+    scanned
+  )
 
   const buildTarget = new BuildTarget(
     sbomFilename ||
-    bom.metadata?.component?.swid?.version ||
-    bom.metadata?.component?.version ||
-    'someName'
+      sbom.metadata?.component?.swid?.version ||
+      sbom.metadata?.component?.version ||
+      'someName'
   )
   snap.addManifest(buildTarget)
 
   const packageCache: PackageCache = new PackageCache()
-  const deps = dependencyForPackage(sbom.metadata.component?.purl, sbom.dependencies)
-  if (!deps.length && sbom.dependencies?.length && bom.components) {
+  const deps = dependencyForPackage(
+    sbom.metadata.component?.purl?.toString(),
+    sbom.dependencies
+  )
+  if (!deps.length && sbom.dependencies?.length && sbom.components) {
     // main package url has not defined explicit dependencies in SBOM, add all components
-    bom.components.forEach(c => { if (c.purl) deps.push(c.purl?.toString()) })
+    for (const c of sbom.components) {
+      if (c.purl) deps.push(c.purl?.toString())
+    }
   }
   for (const dep of deps) {
-    let pkg: Package | undefined = packageCache.lookupPackage(dep)
-    pkg ? buildTarget.addDirectDependency(pkg) : buildTarget.addDirectDependency(packageCache.package(dep))
+    const pkg: Package | undefined = packageCache.lookupPackage(dep)
+    pkg
+      ? buildTarget.addDirectDependency(pkg)
+      : buildTarget.addDirectDependency(packageCache.package(dep))
 
     addIndirectDeps(dep, sbom, packageCache, buildTarget)
   }
@@ -97,11 +104,18 @@ export function map(sbom: any, sbomFilename?: string): Snapshot {
   return snap
 }
 
-function addIndirectDeps(dep: string, sbom: any, packageCache: PackageCache, buildTarget: BuildTarget) {
+function addIndirectDeps(
+  dep: string,
+  sbom: SBom,
+  packageCache: PackageCache,
+  buildTarget: BuildTarget
+): void {
   const indirectDeps = dependencyForPackage(dep, sbom.dependencies)
   for (const indirectDep of indirectDeps) {
-    let inpkg: Package | undefined = packageCache.lookupPackage(indirectDep)
-    inpkg ? buildTarget.addIndirectDependency(inpkg) : buildTarget.addIndirectDependency(packageCache.package(indirectDep))
+    const inpkg: Package | undefined = packageCache.lookupPackage(indirectDep)
+    inpkg
+      ? buildTarget.addIndirectDependency(inpkg)
+      : buildTarget.addIndirectDependency(packageCache.package(indirectDep))
     addIndirectDeps(indirectDep, sbom, packageCache, buildTarget)
   }
 }
@@ -112,7 +126,10 @@ function addIndirectDeps(dep: string, sbom: any, packageCache: PackageCache, bui
  * @param deps Dependencies as listed in SBOM
  * @returns List of package URLs, empty if no dependencies
  */
-function dependencyForPackage(purl: string | undefined, deps: Dependency[]): string[] {
+function dependencyForPackage(
+  purl: string | undefined,
+  deps: Dependency[]
+): string[] {
   if (!purl) return []
   const componentDeps = deps?.find(c => c.ref.toString() === purl)
   return componentDeps?.dependsOn || []
@@ -122,4 +139,4 @@ export function parseSbomFile(sbomFile: string): SBom {
   return JSON.parse(fs.readFileSync(sbomFile, 'utf8')) as SBom
 }
 
-run().catch(error => core.setFailed(`Failed with ${error.message}`))
+run()

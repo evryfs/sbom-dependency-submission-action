@@ -1,7 +1,7 @@
 import { RunOptions, RunTarget } from 'github-action-ts-run-api'
 import { Bom, Component } from '@cyclonedx/cyclonedx-library/src/models'
 import { expect, test, afterEach, jest } from '@jest/globals'
-import { map, parseSbomFile, process, run } from '../src/main'
+import { map, parseSbomFile, process, run, SBom } from '../src/main'
 import { Manifest, Snapshot } from '@github/dependency-submission-toolkit'
 
 describe('Parse', () => {
@@ -10,7 +10,7 @@ describe('Parse', () => {
   })
 
   test('testParsing', () => {
-    let bom: Bom = parseSbomFile('__tests__/data/valid-bom-1.4.json')
+    let bom: SBom = parseSbomFile('__tests__/data/valid-bom-1.4.json')
     expect(bom).not.toBeNull()
     expect(bom.metadata?.authors).not.toBeNull()
 
@@ -29,7 +29,7 @@ describe('Map to GH dep submission', () => {
 
   test('testCycloneDXMavenDropwizardExample', () => {
     const bomfile: string = '__tests__/data/dropwizard-1.3.15-sbom.json'
-    const bom: Bom = parseSbomFile(bomfile)
+    const bom: SBom = parseSbomFile(bomfile)
     const snapshot: Snapshot = map(bom, bomfile)
     expect(snapshot).not.toBeNull()
 
@@ -42,7 +42,7 @@ describe('Map to GH dep submission', () => {
 
   test('testCycloneDXMavenKeycloakExample', () => {
     const bomfile: string = '__tests__/data/keycloak-10.0.2-sbom.json'
-    const bom: Bom = parseSbomFile(bomfile)
+    const bom: SBom = parseSbomFile(bomfile)
     const snapshot: Snapshot = map(bom, bomfile)
     expect(snapshot).not.toBeNull()
 
