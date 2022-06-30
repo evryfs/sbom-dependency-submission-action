@@ -1,4 +1,4 @@
-name: 'Your name here'
+name: 'SBOM submission action'
 description: 'Import SBOMs into GitHub dependency submission API'
 author: 'evryfs'
 inputs:
