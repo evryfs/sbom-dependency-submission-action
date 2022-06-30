@@ -2,7 +2,11 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import * as cdx from '@cyclonedx/cyclonedx-library'
 import * as fs from 'fs'
-import {Detector} from '@github/dependency-submission-toolkit/dist/snapshot'
+import {
+  Detector,
+  Job,
+  jobFromContext
+} from '@github/dependency-submission-toolkit/dist/snapshot'
 import {
   PackageCache,
   Package,
@@ -66,12 +70,10 @@ export function map(sbom: SBom, sbomFilename?: string): Snapshot {
     scanned = new Date(sbom.metadata.timestamp)
   }
 
-  const snap: Snapshot = new Snapshot(
-    detector,
-    github?.context,
-    undefined,
-    scanned
-  )
+  const job: Job = jobFromContext(github.context)
+  job.correlator += sbomFilename
+
+  const snap: Snapshot = new Snapshot(detector, github?.context, job, scanned)
 
   const buildTarget = new BuildTarget(
     sbomFilename ||
