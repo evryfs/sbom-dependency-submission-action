@@ -2,9 +2,13 @@ name: 'Your name here'
 description: 'Import SBOMs into GitHub dependency submission API'
 author: 'evryfs'
 inputs:
-  sbom-file:
+  sbom-files:
     required: true
-    description: 'Path to SBOM file'
+    description: 'Path to SBOM files, separated by whitespace'
+  token:
+    required: false
+    description: 'The github token used to interact with github dependency submission API'
+    default: ${{ github.token }}
 runs:
   using: 'node16'
   main: 'dist/index.js'
