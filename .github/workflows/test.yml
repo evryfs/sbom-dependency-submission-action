@@ -32,4 +32,3 @@ jobs:
       - uses: ./
         with:
           sbom-files: ${{ matrix.test-file}}
-          token: ${{ github.token }}
