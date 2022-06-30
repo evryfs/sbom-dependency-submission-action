@@ -1,10 +1,10 @@
-name: 'build-test'
+name: "build-test"
 on: # rebuild any PRs and main branch changes
   pull_request:
   push:
     branches:
       - main
-      - 'releases/*'
+      - "releases/*"
 env:
   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
@@ -17,9 +17,18 @@ jobs:
       - run: |
           npm run all
   test: # make sure the action works on a clean machine without building
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        test-file:
+          [
+            "__tests__/data/dropwizard-1.3.15-sbom.json",
+            "__tests__/data/keycloak-10.0.2-sbom.json",
+          ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: ./
         with:
-          sbom-file: 'someSbomFile.json'
+          sbom-files: ${{ matrix.test-file}}
