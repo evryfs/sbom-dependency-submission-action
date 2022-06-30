@@ -44,6 +44,7 @@ const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const cdx = __importStar(__nccwpck_require__(5121));
 const fs = __importStar(__nccwpck_require__(7147));
+const snapshot_1 = __nccwpck_require__(3533);
 const dependency_submission_toolkit_1 = __nccwpck_require__(9810);
 class SBom extends cdx.Models.Bom {
     constructor() {
@@ -103,7 +104,9 @@ function map(sbom, sbomFilename) {
     if (typeof sbom.metadata.timestamp === 'string') {
         scanned = new Date(sbom.metadata.timestamp);
     }
-    const snap = new dependency_submission_toolkit_1.Snapshot(detector, github === null || github === void 0 ? void 0 : github.context, undefined, scanned);
+    const job = (0, snapshot_1.jobFromContext)(github.context);
+    job.correlator += sbomFilename;
+    const snap = new dependency_submission_toolkit_1.Snapshot(detector, github === null || github === void 0 ? void 0 : github.context, job, scanned);
     const buildTarget = new dependency_submission_toolkit_1.BuildTarget(sbomFilename ||
         ((_e = (_d = (_c = sbom.metadata) === null || _c === void 0 ? void 0 : _c.component) === null || _d === void 0 ? void 0 : _d.swid) === null || _e === void 0 ? void 0 : _e.version) ||
         ((_g = (_f = sbom.metadata) === null || _f === void 0 ? void 0 : _f.component) === null || _g === void 0 ? void 0 : _g.version) ||
@@ -11400,6 +11403,150 @@ module.exports = __webpack_exports__;
 
 /***/ }),
 
+/***/ 3533:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.submitSnapshot = exports.Snapshot = exports.jobFromContext = void 0;
+const core = __importStar(__nccwpck_require__(2186));
+const github = __importStar(__nccwpck_require__(5438));
+const rest_1 = __nccwpck_require__(5375);
+const request_error_1 = __nccwpck_require__(537);
+/**
+ * jobFromContext creates a job from a @actions/github Context
+ *
+ * @param {Context} context
+ * @returns {Job}
+ */
+function jobFromContext(context) {
+    return {
+        correlator: context.job,
+        id: context.runId.toString()
+    };
+}
+exports.jobFromContext = jobFromContext;
+/**
+ * Snapshot is the top-level container for Dependency Submission
+ */
+class Snapshot {
+    /**
+     * All constructor parameters of a Snapshot are optional, but can be specified for specific overrides
+     *
+     * @param {Detector} detector
+     * @param {Context} context
+     * @param {Job} job
+     * @param {Date} date
+     * @param {number} version
+     */
+    constructor(detector, context = github.context, job, date = new Date(), version = 0) {
+        this.detector = detector;
+        this.version = version;
+        this.job = job || jobFromContext(context);
+        this.sha = context.sha;
+        this.ref = context.ref;
+        this.scanned = date.toISOString();
+        this.manifests = {};
+    }
+    /**
+     * addManifest adds a manifest to the snapshot. At least one manifest must be added.
+     *
+     * @param {Manifest} manifest
+     */
+    addManifest(manifest) {
+        this.manifests[manifest.name] = manifest;
+    }
+    /**
+     * prettyJSON formats an intended version of the Snapshot (useful for debugging)
+     *
+     * @returns {string}
+     */
+    prettyJSON() {
+        return JSON.stringify(this, undefined, 4);
+    }
+}
+exports.Snapshot = Snapshot;
+/**
+ * submitSnapshot submits a snapshot to the Dependency Submission API
+ *
+ * @param {Snapshot} snapshot
+ * @param {Context} context
+ */
+function submitSnapshot(snapshot, context = github.context) {
+    return __awaiter(this, void 0, void 0, function* () {
+        core.setOutput('snapshot', JSON.stringify(snapshot));
+        core.notice('Submitting snapshot...');
+        core.notice(snapshot.prettyJSON());
+        const repo = context.repo;
+        const githubToken = core.getInput('token') || (yield core.getIDToken());
+        const octokit = new rest_1.Octokit({
+            auth: githubToken
+        });
+        try {
+            const response = yield octokit.request('POST /repos/{owner}/{repo}/dependency-graph/snapshots', {
+                headers: {
+                    accept: 'application/vnd.github.foo-bar-preview+json'
+                },
+                owner: repo.owner,
+                repo: repo.repo,
+                data: JSON.stringify(snapshot)
+            });
+            core.notice('Snapshot successfully created at ' + response.data.created_at.toString());
+        }
+        catch (error) {
+            if (error instanceof request_error_1.RequestError) {
+                core.error(`HTTP Status ${error.status} for request ${error.request.method} ${error.request.url}`);
+                if (error.response) {
+                    core.error(`Response body:\n${JSON.stringify(error.response.data, undefined, 2)}`);
+                }
+            }
+            if (error instanceof Error) {
+                core.error(error.message);
+                if (error.stack)
+                    core.error(error.stack);
+            }
+            throw new Error(`Failed to submit snapshot: ${error}`);
+        }
+    });
+}
+exports.submitSnapshot = submitSnapshot;
+//# sourceMappingURL=snapshot.js.map
+
+/***/ }),
+
 /***/ 3047:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -12386,6 +12533,44 @@ exports.composePaginateRest = composePaginateRest;
 exports.isPaginatingEndpoint = isPaginatingEndpoint;
 exports.paginateRest = paginateRest;
 exports.paginatingEndpoints = paginatingEndpoints;
+//# sourceMappingURL=index.js.map
+
+
+/***/ }),
+
+/***/ 8883:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+const VERSION = "1.0.4";
+
+/**
+ * @param octokit Octokit instance
+ * @param options Options passed to Octokit constructor
+ */
+
+function requestLog(octokit) {
+  octokit.hook.wrap("request", (request, options) => {
+    octokit.log.debug("request", options);
+    const start = Date.now();
+    const requestOptions = octokit.request.endpoint.parse(options);
+    const path = requestOptions.url.replace(options.baseUrl, "");
+    return request(options).then(response => {
+      octokit.log.info(`${requestOptions.method} ${path} - ${response.status} in ${Date.now() - start}ms`);
+      return response;
+    }).catch(error => {
+      octokit.log.info(`${requestOptions.method} ${path} - ${error.status} in ${Date.now() - start}ms`);
+      throw error;
+    });
+  });
+}
+requestLog.VERSION = VERSION;
+
+exports.requestLog = requestLog;
 //# sourceMappingURL=index.js.map
 
 
@@ -13765,6 +13950,31 @@ const request = withDefaults(endpoint.endpoint, {
 });
 
 exports.request = request;
+//# sourceMappingURL=index.js.map
+
+
+/***/ }),
+
+/***/ 5375:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+var core = __nccwpck_require__(6762);
+var pluginRequestLog = __nccwpck_require__(8883);
+var pluginPaginateRest = __nccwpck_require__(4193);
+var pluginRestEndpointMethods = __nccwpck_require__(3044);
+
+const VERSION = "18.12.0";
+
+const Octokit = core.Octokit.plugin(pluginRequestLog.requestLog, pluginRestEndpointMethods.legacyRestEndpointMethods, pluginPaginateRest.paginateRest).defaults({
+  userAgent: `octokit-rest.js/${VERSION}`
+});
+
+exports.Octokit = Octokit;
 //# sourceMappingURL=index.js.map
 
 
