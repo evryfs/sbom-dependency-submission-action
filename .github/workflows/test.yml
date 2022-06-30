@@ -17,6 +17,8 @@ jobs:
       - run: |
           npm run all
   test: # make sure the action works on a clean machine without building
+    permissions:
+      contents: write
     strategy:
       matrix:
         test-file:
