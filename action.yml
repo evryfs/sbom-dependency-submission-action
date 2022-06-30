@@ -1,6 +1,9 @@
 name: 'SBOM submission action'
 description: 'Import SBOMs into GitHub dependency submission API'
 author: 'evryfs'
+branding:
+  icon: alert-circle
+  color: orange
 inputs:
   sbom-files:
     required: true
