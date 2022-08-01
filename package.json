@@ -28,7 +28,7 @@
   "dependencies": {
     "@actions/core": "^1.9.0",
     "@actions/github": "^5.0.3",
-    "@cyclonedx/cyclonedx-library": "^1.0.3",
+    "@cyclonedx/cyclonedx-library": "^1.1.0",
     "@github/dependency-submission-toolkit": "^1.2.2"
   },
   "devDependencies": {
