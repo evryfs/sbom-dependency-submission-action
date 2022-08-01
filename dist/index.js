@@ -54836,6 +54836,36 @@ exports.SortableSet = SortableSet;
 
 /***/ }),
 
+/***/ 813:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*!
+This file is part of CycloneDX JavaScript Library.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+Copyright (c) OWASP Foundation. All Rights Reserved.
+*/
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.treeIterator = void 0;
+exports.treeIterator = Symbol('iterator of a tree/nesting-like structure');
+//# sourceMappingURL=tree.js.map
+
+/***/ }),
+
 /***/ 5121:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -55095,6 +55125,7 @@ const hash_1 = __nccwpck_require__(8858);
 const externalReference_1 = __nccwpck_require__(885);
 const license_1 = __nccwpck_require__(922);
 const sortableSet_1 = __nccwpck_require__(9206);
+const tree_1 = __nccwpck_require__(813);
 class Component {
     constructor(type, name, op = {}) {
         _Component_bomRef.set(this, void 0);
@@ -55116,6 +55147,7 @@ class Component {
         this.version = op.version;
         this.description = op.description;
         this.dependencies = op.dependencies ?? new bomRef_1.BomRefRepository();
+        this.components = op.components ?? new ComponentRepository();
         this.cpe = op.cpe;
     }
     get bomRef() {
@@ -55149,6 +55181,12 @@ class Component {
 exports.Component = Component;
 _Component_bomRef = new WeakMap(), _Component_cpe = new WeakMap();
 class ComponentRepository extends sortableSet_1.SortableSet {
+    *[tree_1.treeIterator]() {
+        for (const component of this) {
+            yield component;
+            yield* component.components[tree_1.treeIterator]();
+        }
+    }
 }
 exports.ComponentRepository = ComponentRepository;
 //# sourceMappingURL=component.js.map
@@ -56083,6 +56121,7 @@ const notUndefined_1 = __nccwpck_require__(4577);
 const Models = __importStar(__nccwpck_require__(3638));
 const spec_1 = __nccwpck_require__(2576);
 const types_1 = __nccwpck_require__(2998);
+const tree_1 = __nccwpck_require__(813);
 class Factory {
     constructor(spec) {
         _Factory_spec.set(this, void 0);
@@ -56256,12 +56295,16 @@ class OrganizationalEntityNormalizer extends Base {
 exports.OrganizationalEntityNormalizer = OrganizationalEntityNormalizer;
 class ComponentNormalizer extends Base {
     normalize(data, options) {
-        return this._factory.spec.supportsComponentType(data.type)
+        const spec = this._factory.spec;
+        const version = data.version ?? '';
+        return spec.supportsComponentType(data.type)
             ? {
                 type: data.type,
                 name: data.name,
                 group: data.group || undefined,
-                version: data.version || '',
+                version: version.length > 0 || spec.requiresComponentVersion
+                    ? version
+                    : undefined,
                 'bom-ref': data.bomRef.value || undefined,
                 supplier: data.supplier === undefined
                     ? undefined
@@ -56284,6 +56327,9 @@ class ComponentNormalizer extends Base {
                     : this._factory.makeForSWID().normalize(data.swid, options),
                 externalReferences: data.externalReferences.size > 0
                     ? this._factory.makeForExternalReference().normalizeRepository(data.externalReferences, options)
+                    : undefined,
+                components: data.components.size > 0
+                    ? this.normalizeRepository(data.components, options)
                     : undefined
             }
             : undefined;
@@ -56399,9 +56445,12 @@ class DependencyGraphNormalizer extends Base {
         const allRefs = new Map();
         if (data.metadata.component !== undefined) {
             allRefs.set(data.metadata.component.bomRef, data.metadata.component.dependencies);
+            for (const component of data.metadata.component.components[tree_1.treeIterator]()) {
+                allRefs.set(component.bomRef, component.dependencies);
+            }
         }
-        for (const c of data.components) {
-            allRefs.set(c.bomRef, new Models.BomRefRepository(c.dependencies));
+        for (const component of data.components[tree_1.treeIterator]()) {
+            allRefs.set(component.bomRef, component.dependencies);
         }
         const normalized = [];
         for (const [ref, deps] of allRefs) {
@@ -56691,6 +56740,7 @@ const notUndefined_1 = __nccwpck_require__(4577);
 const Models = __importStar(__nccwpck_require__(3638));
 const spec_1 = __nccwpck_require__(2576);
 const types_1 = __nccwpck_require__(2908);
+const tree_1 = __nccwpck_require__(813);
 class Factory {
     constructor(spec) {
         _Factory_spec.set(this, void 0);
@@ -56915,12 +56965,16 @@ class OrganizationalEntityNormalizer extends Base {
 exports.OrganizationalEntityNormalizer = OrganizationalEntityNormalizer;
 class ComponentNormalizer extends Base {
     normalize(data, options, elementName) {
-        if (!this._factory.spec.supportsComponentType(data.type)) {
+        const spec = this._factory.spec;
+        if (!spec.supportsComponentType(data.type)) {
             return undefined;
         }
         const supplier = data.supplier === undefined
             ? undefined
             : this._factory.makeForOrganizationalEntity().normalize(data.supplier, options, 'supplier');
+        const version = (spec.requiresComponentVersion
+            ? makeTextElement
+            : makeOptionalTextElement)(data.version ?? '', 'version');
         const hashes = data.hashes.size > 0
             ? {
                 type: 'element',
@@ -56946,6 +57000,13 @@ class ComponentNormalizer extends Base {
                     .normalizeRepository(data.externalReferences, options, 'reference')
             }
             : undefined;
+        const components = data.components.size > 0
+            ? {
+                type: 'element',
+                name: 'components',
+                children: this.normalizeRepository(data.components, options, 'component')
+            }
+            : undefined;
         return {
             type: 'element',
             name: elementName,
@@ -56959,7 +57020,7 @@ class ComponentNormalizer extends Base {
                 makeOptionalTextElement(data.publisher, 'publisher'),
                 makeOptionalTextElement(data.group, 'group'),
                 makeTextElement(data.name, 'name'),
-                makeTextElement(data.version ?? '', 'version'),
+                version,
                 makeOptionalTextElement(data.description, 'description'),
                 makeOptionalTextElement(data.scope, 'scope'),
                 hashes,
@@ -56968,7 +57029,8 @@ class ComponentNormalizer extends Base {
                 makeOptionalTextElement(data.cpe, 'cpe'),
                 makeOptionalTextElement(data.purl, 'purl'),
                 swid,
-                extRefs
+                extRefs,
+                components
             ].filter(notUndefined_1.isNotUndefined)
         };
     }
@@ -57111,9 +57173,12 @@ class DependencyGraphNormalizer extends Base {
         const allRefs = new Map();
         if (data.metadata.component !== undefined) {
             allRefs.set(data.metadata.component.bomRef, data.metadata.component.dependencies);
+            for (const component of data.metadata.component.components[tree_1.treeIterator]()) {
+                allRefs.set(component.bomRef, component.dependencies);
+            }
         }
-        for (const c of data.components) {
-            allRefs.set(c.bomRef, new Models.BomRefRepository(c.dependencies));
+        for (const component of data.components[tree_1.treeIterator]()) {
+            allRefs.set(component.bomRef, component.dependencies);
         }
         const normalized = [];
         for (const [ref, deps] of allRefs) {
@@ -57388,7 +57453,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Spec_version, _Spec_formats, _Spec_componentTypes, _Spec_hashAlgorithms, _Spec_hashValuePattern, _Spec_externalReferenceTypes, _Spec_supportsDependencyGraph, _Spec_supportsToolReferences;
+var _Spec_version, _Spec_formats, _Spec_componentTypes, _Spec_hashAlgorithms, _Spec_hashValuePattern, _Spec_externalReferenceTypes, _Spec_supportsDependencyGraph, _Spec_supportsToolReferences, _Spec_requiresComponentVersion;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SpecVersionDict = exports.Spec1dot4 = exports.Spec1dot3 = exports.Spec1dot2 = exports.UnsupportedFormatError = exports.Format = exports.Version = void 0;
 const enums_1 = __nccwpck_require__(4806);
@@ -57409,7 +57474,7 @@ class UnsupportedFormatError extends Error {
 }
 exports.UnsupportedFormatError = UnsupportedFormatError;
 class Spec {
-    constructor(version, formats, componentTypes, hashAlgorithms, hashValuePattern, externalReferenceTypes, supportsDependencyGraph, supportsToolReferences) {
+    constructor(version, formats, componentTypes, hashAlgorithms, hashValuePattern, externalReferenceTypes, supportsDependencyGraph, supportsToolReferences, requiresComponentVersion) {
         _Spec_version.set(this, void 0);
         _Spec_formats.set(this, void 0);
         _Spec_componentTypes.set(this, void 0);
@@ -57418,6 +57483,7 @@ class Spec {
         _Spec_externalReferenceTypes.set(this, void 0);
         _Spec_supportsDependencyGraph.set(this, void 0);
         _Spec_supportsToolReferences.set(this, void 0);
+        _Spec_requiresComponentVersion.set(this, void 0);
         __classPrivateFieldSet(this, _Spec_version, version, "f");
         __classPrivateFieldSet(this, _Spec_formats, new Set(formats), "f");
         __classPrivateFieldSet(this, _Spec_componentTypes, new Set(componentTypes), "f");
@@ -57426,6 +57492,7 @@ class Spec {
         __classPrivateFieldSet(this, _Spec_externalReferenceTypes, new Set(externalReferenceTypes), "f");
         __classPrivateFieldSet(this, _Spec_supportsDependencyGraph, supportsDependencyGraph, "f");
         __classPrivateFieldSet(this, _Spec_supportsToolReferences, supportsToolReferences, "f");
+        __classPrivateFieldSet(this, _Spec_requiresComponentVersion, requiresComponentVersion, "f");
     }
     get version() {
         return __classPrivateFieldGet(this, _Spec_version, "f");
@@ -57452,8 +57519,11 @@ class Spec {
     get supportsToolReferences() {
         return __classPrivateFieldGet(this, _Spec_supportsToolReferences, "f");
     }
+    get requiresComponentVersion() {
+        return __classPrivateFieldGet(this, _Spec_requiresComponentVersion, "f");
+    }
 }
-_Spec_version = new WeakMap(), _Spec_formats = new WeakMap(), _Spec_componentTypes = new WeakMap(), _Spec_hashAlgorithms = new WeakMap(), _Spec_hashValuePattern = new WeakMap(), _Spec_externalReferenceTypes = new WeakMap(), _Spec_supportsDependencyGraph = new WeakMap(), _Spec_supportsToolReferences = new WeakMap();
+_Spec_version = new WeakMap(), _Spec_formats = new WeakMap(), _Spec_componentTypes = new WeakMap(), _Spec_hashAlgorithms = new WeakMap(), _Spec_hashValuePattern = new WeakMap(), _Spec_externalReferenceTypes = new WeakMap(), _Spec_supportsDependencyGraph = new WeakMap(), _Spec_supportsToolReferences = new WeakMap(), _Spec_requiresComponentVersion = new WeakMap();
 exports.Spec1dot2 = Object.freeze(new Spec(Version.v1dot2, [
     Format.XML,
     Format.JSON
@@ -57495,7 +57565,7 @@ exports.Spec1dot2 = Object.freeze(new Spec(Version.v1dot2, [
     enums_1.ExternalReferenceType.BuildMeta,
     enums_1.ExternalReferenceType.BuildSystem,
     enums_1.ExternalReferenceType.Other
-], true, false));
+], true, false, true));
 exports.Spec1dot3 = Object.freeze(new Spec(Version.v1dot3, [
     Format.XML,
     Format.JSON
@@ -57537,7 +57607,7 @@ exports.Spec1dot3 = Object.freeze(new Spec(Version.v1dot3, [
     enums_1.ExternalReferenceType.BuildMeta,
     enums_1.ExternalReferenceType.BuildSystem,
     enums_1.ExternalReferenceType.Other
-], true, false));
+], true, false, true));
 exports.Spec1dot4 = Object.freeze(new Spec(Version.v1dot4, [
     Format.XML,
     Format.JSON
@@ -57580,7 +57650,7 @@ exports.Spec1dot4 = Object.freeze(new Spec(Version.v1dot4, [
     enums_1.ExternalReferenceType.BuildSystem,
     enums_1.ExternalReferenceType.ReleaseNotes,
     enums_1.ExternalReferenceType.Other
-], true, true));
+], true, true, false));
 exports.SpecVersionDict = Object.freeze(Object.fromEntries([
     [Version.v1dot2, exports.Spec1dot2],
     [Version.v1dot3, exports.Spec1dot3],
