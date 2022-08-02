@@ -53954,7 +53954,7 @@ module.exports = require("zlib");
 
 /***/ }),
 
-/***/ 2961:
+/***/ 4301:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -54022,6 +54022,9 @@ class ToolBuilder {
         _ToolBuilder_extRefFactory.set(this, void 0);
         __classPrivateFieldSet(this, _ToolBuilder_extRefFactory, extRefFactory, "f");
     }
+    get extRefFactory() {
+        return __classPrivateFieldGet(this, _ToolBuilder_extRefFactory, "f");
+    }
     makeTool(data) {
         const [name, vendor] = typeof data.name === 'string'
             ? (0, packageJson_1.splitNameGroup)(data.name)
@@ -54044,6 +54047,12 @@ class ComponentBuilder {
         _ComponentBuilder_licenseFactory.set(this, void 0);
         __classPrivateFieldSet(this, _ComponentBuilder_extRefFactory, extRefFactory, "f");
         __classPrivateFieldSet(this, _ComponentBuilder_licenseFactory, licenseFactory, "f");
+    }
+    get extRefFactory() {
+        return __classPrivateFieldGet(this, _ComponentBuilder_extRefFactory, "f");
+    }
+    get licenseFactory() {
+        return __classPrivateFieldGet(this, _ComponentBuilder_licenseFactory, "f");
     }
     makeComponent(data, type = Enums.ComponentType.Library) {
         if (typeof data.name !== 'string') {
@@ -54082,7 +54091,7 @@ class ComponentBuilder {
 }
 exports.ComponentBuilder = ComponentBuilder;
 _ComponentBuilder_extRefFactory = new WeakMap(), _ComponentBuilder_licenseFactory = new WeakMap();
-//# sourceMappingURL=fromPackageJson.node.js.map
+//# sourceMappingURL=fromNodePackageJson.node.js.map
 
 /***/ }),
 
@@ -54133,8 +54142,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.FromPackageJson = void 0;
-exports.FromPackageJson = __importStar(__nccwpck_require__(2961));
+exports.FromPackageJson = exports.FromNodePackageJson = void 0;
+exports.FromNodePackageJson = __importStar(__nccwpck_require__(4301));
+exports.FromPackageJson = __importStar(__nccwpck_require__(4301));
 //# sourceMappingURL=index.node.js.map
 
 /***/ }),
@@ -54386,7 +54396,7 @@ __exportStar(__nccwpck_require__(1202), exports);
 
 /***/ }),
 
-/***/ 4582:
+/***/ 1817:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -54498,7 +54508,7 @@ class ExternalReferenceFactory {
     }
 }
 exports.ExternalReferenceFactory = ExternalReferenceFactory;
-//# sourceMappingURL=fromPackageJson.node.js.map
+//# sourceMappingURL=fromNodePackageJson.node.js.map
 
 /***/ }),
 
@@ -54596,9 +54606,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.FromPackageJson = void 0;
+exports.FromPackageJson = exports.FromNodePackageJson = void 0;
 __exportStar(__nccwpck_require__(1992), exports);
-exports.FromPackageJson = __importStar(__nccwpck_require__(4582));
+exports.FromNodePackageJson = __importStar(__nccwpck_require__(1817));
+exports.FromPackageJson = __importStar(__nccwpck_require__(1817));
 //# sourceMappingURL=index.node.js.map
 
 /***/ }),
@@ -54710,14 +54721,26 @@ class PackageUrlFactory {
         _PackageUrlFactory_type.set(this, void 0);
         __classPrivateFieldSet(this, _PackageUrlFactory_type, type, "f");
     }
-    makeFromComponent(component) {
+    get type() {
+        return __classPrivateFieldGet(this, _PackageUrlFactory_type, "f");
+    }
+    makeFromComponent(component, sort = false) {
         const qualifiers = {};
         let subpath;
-        for (const e of component.externalReferences) {
-            if (e.type === enums_1.ExternalReferenceType.VCS) {
-                [qualifiers.vcs_url, subpath] = e.url.toString().split('#', 2);
-                break;
+        const extRefs = component.externalReferences;
+        for (const extRef of (sort ? extRefs.sorted() : extRefs)) {
+            switch (extRef.type) {
+                case enums_1.ExternalReferenceType.VCS:
+                    [qualifiers.vcs_url, subpath] = extRef.url.toString().split('#', 2);
+                    break;
+                case enums_1.ExternalReferenceType.Distribution:
+                    qualifiers.download_url = extRef.url.toString();
+                    break;
             }
+        }
+        const hashes = component.hashes;
+        if (hashes.size > 0) {
+            qualifiers.checksum = Array.from(sort ? hashes.sorted() : hashes, ([hashAlgo, hashCont]) => `${hashAlgo.toLowerCase()}:${hashCont.toLowerCase()}`).join(',');
         }
         try {
             return new packageurl_js_1.PackageURL(__classPrivateFieldGet(this, _PackageUrlFactory_type, "f"), component.group, component.name, component.version, qualifiers, subpath);
@@ -55869,6 +55892,9 @@ class BomRefDiscriminator {
         __classPrivateFieldSet(this, _BomRefDiscriminator_originalValues, new Map(Array.from(bomRefs).map(ref => [ref, ref.value])), "f");
         __classPrivateFieldSet(this, _BomRefDiscriminator_prefix, prefix, "f");
     }
+    get prefix() {
+        return __classPrivateFieldGet(this, _BomRefDiscriminator_prefix, "f");
+    }
     [(_BomRefDiscriminator_originalValues = new WeakMap(), _BomRefDiscriminator_prefix = new WeakMap(), _BomRefDiscriminator_instances = new WeakSet(), Symbol.iterator)]() {
         return __classPrivateFieldGet(this, _BomRefDiscriminator_originalValues, "f").keys();
     }
@@ -56177,6 +56203,9 @@ const schemaUrl = new Map([
 class Base {
     constructor(factory) {
         this._factory = factory;
+    }
+    get factory() {
+        return this._factory;
     }
 }
 class BomNormalizer extends Base {
@@ -56580,6 +56609,9 @@ class JsonSerializer extends baseSerializer_1.BaseSerializer {
         _JsonSerializer_normalizerFactory.set(this, void 0);
         __classPrivateFieldSet(this, _JsonSerializer_normalizerFactory, normalizerFactory, "f");
     }
+    get normalizerFactory() {
+        return __classPrivateFieldGet(this, _JsonSerializer_normalizerFactory, "f");
+    }
     _normalize(bom, options = {}) {
         return __classPrivateFieldGet(this, _JsonSerializer_normalizerFactory, "f").makeForBom()
             .normalize(bom, options);
@@ -56796,6 +56828,9 @@ const xmlNamespace = new Map([
 class Base {
     constructor(factory) {
         this._factory = factory;
+    }
+    get factory() {
+        return this._factory;
     }
 }
 class BomNormalizer extends Base {
@@ -57328,6 +57363,9 @@ class XmlBaseSerializer extends baseSerializer_1.BaseSerializer {
         super();
         _XmlBaseSerializer_normalizerFactory.set(this, void 0);
         __classPrivateFieldSet(this, _XmlBaseSerializer_normalizerFactory, normalizerFactory, "f");
+    }
+    get normalizerFactory() {
+        return __classPrivateFieldGet(this, _XmlBaseSerializer_normalizerFactory, "f");
     }
     _normalize(bom, options = {}) {
         return __classPrivateFieldGet(this, _XmlBaseSerializer_normalizerFactory, "f").makeForBom()
