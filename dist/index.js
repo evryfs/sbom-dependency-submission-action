@@ -56407,11 +56407,11 @@ class ComponentNormalizer extends Base {
                 externalReferences: data.externalReferences.size > 0
                     ? this._factory.makeForExternalReference().normalizeRepository(data.externalReferences, options)
                     : undefined,
+                properties: spec.supportsProperties(data) && data.properties.size > 0
+                    ? this._factory.makeForProperty().normalizeRepository(data.properties, options)
+                    : undefined,
                 components: data.components.size > 0
                     ? this.normalizeRepository(data.components, options)
-                    : undefined,
-                properties: data.properties.size > 0
-                    ? this._factory.makeForProperty().normalizeRepository(data.properties, options)
                     : undefined
             }
             : undefined;
@@ -57105,18 +57105,18 @@ class ComponentNormalizer extends Base {
                     .normalizeRepository(data.externalReferences, options, 'reference')
             }
             : undefined;
+        const properties = spec.supportsProperties(data) && data.properties.size > 0
+            ? {
+                type: 'element',
+                name: 'properties',
+                children: this._factory.makeForProperty().normalizeRepository(data.properties, options, 'property')
+            }
+            : undefined;
         const components = data.components.size > 0
             ? {
                 type: 'element',
                 name: 'components',
                 children: this.normalizeRepository(data.components, options, 'component')
-            }
-            : undefined;
-        const properties = data.properties.size > 0
-            ? {
-                type: 'element',
-                name: 'properties',
-                children: this._factory.makeForProperty().normalizeRepository(data.properties, options, 'property')
             }
             : undefined;
         return {
@@ -57142,8 +57142,8 @@ class ComponentNormalizer extends Base {
                 makeOptionalTextElement(data.purl, 'purl'),
                 swid,
                 extRefs,
-                components,
-                properties
+                properties,
+                components
             ].filter(notUndefined_1.isNotUndefined)
         };
     }
@@ -57587,7 +57587,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Spec_version, _Spec_formats, _Spec_componentTypes, _Spec_hashAlgorithms, _Spec_hashValuePattern, _Spec_externalReferenceTypes, _Spec_supportsDependencyGraph, _Spec_supportsToolReferences, _Spec_requiresComponentVersion;
+var _Spec_version, _Spec_formats, _Spec_componentTypes, _Spec_hashAlgorithms, _Spec_hashValuePattern, _Spec_externalReferenceTypes, _Spec_supportsDependencyGraph, _Spec_supportsToolReferences, _Spec_requiresComponentVersion, _Spec_supportsProperties;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SpecVersionDict = exports.Spec1dot4 = exports.Spec1dot3 = exports.Spec1dot2 = exports.UnsupportedFormatError = exports.Format = exports.Version = void 0;
 const enums_1 = __nccwpck_require__(4806);
@@ -57608,7 +57608,7 @@ class UnsupportedFormatError extends Error {
 }
 exports.UnsupportedFormatError = UnsupportedFormatError;
 class Spec {
-    constructor(version, formats, componentTypes, hashAlgorithms, hashValuePattern, externalReferenceTypes, supportsDependencyGraph, supportsToolReferences, requiresComponentVersion) {
+    constructor(version, formats, componentTypes, hashAlgorithms, hashValuePattern, externalReferenceTypes, supportsDependencyGraph, supportsToolReferences, requiresComponentVersion, supportsProperties) {
         _Spec_version.set(this, void 0);
         _Spec_formats.set(this, void 0);
         _Spec_componentTypes.set(this, void 0);
@@ -57618,6 +57618,7 @@ class Spec {
         _Spec_supportsDependencyGraph.set(this, void 0);
         _Spec_supportsToolReferences.set(this, void 0);
         _Spec_requiresComponentVersion.set(this, void 0);
+        _Spec_supportsProperties.set(this, void 0);
         __classPrivateFieldSet(this, _Spec_version, version, "f");
         __classPrivateFieldSet(this, _Spec_formats, new Set(formats), "f");
         __classPrivateFieldSet(this, _Spec_componentTypes, new Set(componentTypes), "f");
@@ -57627,6 +57628,7 @@ class Spec {
         __classPrivateFieldSet(this, _Spec_supportsDependencyGraph, supportsDependencyGraph, "f");
         __classPrivateFieldSet(this, _Spec_supportsToolReferences, supportsToolReferences, "f");
         __classPrivateFieldSet(this, _Spec_requiresComponentVersion, requiresComponentVersion, "f");
+        __classPrivateFieldSet(this, _Spec_supportsProperties, supportsProperties, "f");
     }
     get version() {
         return __classPrivateFieldGet(this, _Spec_version, "f");
@@ -57656,8 +57658,11 @@ class Spec {
     get requiresComponentVersion() {
         return __classPrivateFieldGet(this, _Spec_requiresComponentVersion, "f");
     }
+    supportsProperties() {
+        return __classPrivateFieldGet(this, _Spec_supportsProperties, "f");
+    }
 }
-_Spec_version = new WeakMap(), _Spec_formats = new WeakMap(), _Spec_componentTypes = new WeakMap(), _Spec_hashAlgorithms = new WeakMap(), _Spec_hashValuePattern = new WeakMap(), _Spec_externalReferenceTypes = new WeakMap(), _Spec_supportsDependencyGraph = new WeakMap(), _Spec_supportsToolReferences = new WeakMap(), _Spec_requiresComponentVersion = new WeakMap();
+_Spec_version = new WeakMap(), _Spec_formats = new WeakMap(), _Spec_componentTypes = new WeakMap(), _Spec_hashAlgorithms = new WeakMap(), _Spec_hashValuePattern = new WeakMap(), _Spec_externalReferenceTypes = new WeakMap(), _Spec_supportsDependencyGraph = new WeakMap(), _Spec_supportsToolReferences = new WeakMap(), _Spec_requiresComponentVersion = new WeakMap(), _Spec_supportsProperties = new WeakMap();
 exports.Spec1dot2 = Object.freeze(new Spec(Version.v1dot2, [
     Format.XML,
     Format.JSON
@@ -57699,7 +57704,7 @@ exports.Spec1dot2 = Object.freeze(new Spec(Version.v1dot2, [
     enums_1.ExternalReferenceType.BuildMeta,
     enums_1.ExternalReferenceType.BuildSystem,
     enums_1.ExternalReferenceType.Other
-], true, false, true));
+], true, false, true, false));
 exports.Spec1dot3 = Object.freeze(new Spec(Version.v1dot3, [
     Format.XML,
     Format.JSON
@@ -57741,7 +57746,7 @@ exports.Spec1dot3 = Object.freeze(new Spec(Version.v1dot3, [
     enums_1.ExternalReferenceType.BuildMeta,
     enums_1.ExternalReferenceType.BuildSystem,
     enums_1.ExternalReferenceType.Other
-], true, false, true));
+], true, false, true, true));
 exports.Spec1dot4 = Object.freeze(new Spec(Version.v1dot4, [
     Format.XML,
     Format.JSON
@@ -57784,7 +57789,7 @@ exports.Spec1dot4 = Object.freeze(new Spec(Version.v1dot4, [
     enums_1.ExternalReferenceType.BuildSystem,
     enums_1.ExternalReferenceType.ReleaseNotes,
     enums_1.ExternalReferenceType.Other
-], true, true, false));
+], true, true, false, true));
 exports.SpecVersionDict = Object.freeze(Object.fromEntries([
     [Version.v1dot2, exports.Spec1dot2],
     [Version.v1dot3, exports.Spec1dot3],
