@@ -55308,7 +55308,7 @@ class LicenseFactory {
         try {
             return this.makeExpression(value);
         }
-        catch (Error) {
+        catch {
             return this.makeDisjunctive(value);
         }
     }
@@ -55319,7 +55319,7 @@ class LicenseFactory {
         try {
             return this.makeDisjunctiveWithId(value);
         }
-        catch (error) {
+        catch {
             return this.makeDisjunctiveWithName(value);
         }
     }
@@ -55753,7 +55753,7 @@ class BomRef {
         this.value = value;
     }
     compare(other) {
-        return (this.toString()).localeCompare(other.toString());
+        return this.toString().localeCompare(other.toString());
     }
     toString() {
         return this.value ?? '';
@@ -56544,12 +56544,17 @@ class BaseSerializer {
 exports.BaseSerializer = BaseSerializer;
 _BaseSerializer_instances = new WeakSet(), _BaseSerializer_getAllBomRefs = function _BaseSerializer_getAllBomRefs(bom) {
     const bomRefs = new Set();
+    function iterComponents(cs) {
+        for (const { bomRef, components } of cs) {
+            bomRefs.add(bomRef);
+            iterComponents(components);
+        }
+    }
     if (bom.metadata.component !== undefined) {
         bomRefs.add(bom.metadata.component.bomRef);
+        iterComponents(bom.metadata.component.components);
     }
-    for (const { bomRef } of bom.components) {
-        bomRefs.add(bomRef);
-    }
+    iterComponents(bom.components);
     return bomRefs.values();
 };
 //# sourceMappingURL=baseSerializer.js.map
@@ -58063,10 +58068,32 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.XmlSchema = void 0;
 var XmlSchema;
 (function (XmlSchema) {
+    const _anyUriSchemePattern = /^[a-z][a-z0-9+\-.]*$/i;
     function isAnyURI(value) {
-        return typeof value === 'string' &&
-            value.length > 0 &&
-            Array.from(value).filter(c => c === '#').length <= 1;
+        if (typeof value !== 'string') {
+            return false;
+        }
+        if (value.length === 0) {
+            return false;
+        }
+        const fragmentPos = value.indexOf('#');
+        let beforeFragment;
+        if (fragmentPos >= 0) {
+            if (value.includes('#', fragmentPos + 1)) {
+                return false;
+            }
+            beforeFragment = value.slice(undefined, fragmentPos);
+        }
+        else {
+            beforeFragment = value;
+        }
+        const schemePos = beforeFragment.indexOf(':');
+        if (schemePos >= 0) {
+            if (!_anyUriSchemePattern.test(beforeFragment.slice(undefined, schemePos))) {
+                return false;
+            }
+        }
+        return true;
     }
     XmlSchema.isAnyURI = isAnyURI;
 })(XmlSchema = exports.XmlSchema || (exports.XmlSchema = {}));
