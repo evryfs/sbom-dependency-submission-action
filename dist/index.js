@@ -55389,14 +55389,20 @@ class PackageUrlFactory {
     makeFromComponent(component, sort = false) {
         const qualifiers = {};
         let subpath;
-        const extRefs = component.externalReferences;
-        for (const extRef of (sort ? extRefs.sorted() : extRefs)) {
+        const extRefs = sort
+            ? component.externalReferences.sorted()
+            : component.externalReferences;
+        for (const extRef of extRefs) {
+            const url = extRef.url.toString();
+            if (url.length <= 0) {
+                continue;
+            }
             switch (extRef.type) {
                 case enums_1.ExternalReferenceType.VCS:
-                    [qualifiers.vcs_url, subpath] = extRef.url.toString().split('#', 2);
+                    [qualifiers.vcs_url, subpath] = url.split('#', 2);
                     break;
                 case enums_1.ExternalReferenceType.Distribution:
-                    qualifiers.download_url = extRef.url.toString();
+                    qualifiers.download_url = url;
                     break;
             }
         }
