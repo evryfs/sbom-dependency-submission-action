@@ -55104,11 +55104,19 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+};
+var _PackageUrlFactory_instances, _PackageUrlFactory_finalizeQualifiers;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ExternalReferenceFactory = void 0;
+exports.PackageUrlFactory = exports.ExternalReferenceFactory = void 0;
 const Models = __importStar(__nccwpck_require__(3638));
 const Enums = __importStar(__nccwpck_require__(4806));
+const packageUrl_1 = __nccwpck_require__(7671);
 const notUndefined_1 = __nccwpck_require__(4577);
+const packageUrl_2 = __nccwpck_require__(4350);
 class ExternalReferenceFactory {
     makeExternalReferences(data) {
         const refs = [];
@@ -55170,6 +55178,37 @@ class ExternalReferenceFactory {
     }
 }
 exports.ExternalReferenceFactory = ExternalReferenceFactory;
+const npmDefaultRegistryMatcher = /^https?:\/\/registry\.npmjs\.org/;
+class PackageUrlFactory extends packageUrl_1.PackageUrlFactory {
+    constructor() {
+        super(...arguments);
+        _PackageUrlFactory_instances.add(this);
+    }
+    makeFromComponent(component, sort = false) {
+        const purl = super.makeFromComponent(component, sort);
+        return purl === undefined
+            ? undefined
+            : __classPrivateFieldGet(this, _PackageUrlFactory_instances, "m", _PackageUrlFactory_finalizeQualifiers).call(this, purl);
+    }
+}
+exports.PackageUrlFactory = PackageUrlFactory;
+_PackageUrlFactory_instances = new WeakSet(), _PackageUrlFactory_finalizeQualifiers = function _PackageUrlFactory_finalizeQualifiers(purl) {
+    const qualifiers = new Map(Object.entries(purl.qualifiers ?? {}));
+    const downloadUrl = qualifiers.get(packageUrl_2.PackageUrlQualifierNames.DownloadURL);
+    if (downloadUrl !== undefined) {
+        qualifiers.delete(packageUrl_2.PackageUrlQualifierNames.VcsUrl);
+        if (npmDefaultRegistryMatcher.test(downloadUrl)) {
+            qualifiers.delete(packageUrl_2.PackageUrlQualifierNames.DownloadURL);
+        }
+    }
+    if (!qualifiers.has(packageUrl_2.PackageUrlQualifierNames.DownloadURL) && !qualifiers.has(packageUrl_2.PackageUrlQualifierNames.VcsUrl)) {
+        qualifiers.delete(packageUrl_2.PackageUrlQualifierNames.Checksum);
+    }
+    purl.qualifiers = qualifiers.size > 0
+        ? Object.fromEntries(qualifiers.entries())
+        : undefined;
+    return purl;
+};
 //# sourceMappingURL=fromNodePackageJson.node.js.map
 
 /***/ }),
@@ -55378,6 +55417,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PackageUrlFactory = void 0;
 const packageurl_js_1 = __nccwpck_require__(8915);
 const enums_1 = __nccwpck_require__(4806);
+const packageUrl_1 = __nccwpck_require__(4350);
 class PackageUrlFactory {
     constructor(type) {
         _PackageUrlFactory_type.set(this, void 0);
@@ -55399,16 +55439,18 @@ class PackageUrlFactory {
             }
             switch (extRef.type) {
                 case enums_1.ExternalReferenceType.VCS:
-                    [qualifiers.vcs_url, subpath] = url.split('#', 2);
+                    [qualifiers[packageUrl_1.PackageUrlQualifierNames.VcsUrl], subpath] = url.split('#', 2);
                     break;
                 case enums_1.ExternalReferenceType.Distribution:
-                    qualifiers.download_url = url;
+                    qualifiers[packageUrl_1.PackageUrlQualifierNames.DownloadURL] = url;
                     break;
             }
         }
         const hashes = component.hashes;
         if (hashes.size > 0) {
-            qualifiers.checksum = Array.from(sort ? hashes.sorted() : hashes, ([hashAlgo, hashCont]) => `${hashAlgo.toLowerCase()}:${hashCont.toLowerCase()}`).join(',');
+            qualifiers[packageUrl_1.PackageUrlQualifierNames.Checksum] = Array.from(sort
+                ? hashes.sorted()
+                : hashes, ([hashAlgo, hashCont]) => `${hashAlgo.toLowerCase()}:${hashCont.toLowerCase()}`).join(',');
         }
         try {
             return new packageurl_js_1.PackageURL(__classPrivateFieldGet(this, _PackageUrlFactory_type, "f"), component.group, component.name, component.version, qualifiers, subpath);
@@ -55489,6 +55531,41 @@ function splitNameGroup(data) {
 }
 exports.splitNameGroup = splitNameGroup;
 //# sourceMappingURL=packageJson.js.map
+
+/***/ }),
+
+/***/ 4350:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*!
+This file is part of CycloneDX JavaScript Library.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+Copyright (c) OWASP Foundation. All Rights Reserved.
+*/
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PackageUrlQualifierNames = void 0;
+var PackageUrlQualifierNames;
+(function (PackageUrlQualifierNames) {
+    PackageUrlQualifierNames["DownloadURL"] = "download_url";
+    PackageUrlQualifierNames["VcsUrl"] = "vcs_url";
+    PackageUrlQualifierNames["Checksum"] = "checksum";
+})(PackageUrlQualifierNames = exports.PackageUrlQualifierNames || (exports.PackageUrlQualifierNames = {}));
+//# sourceMappingURL=packageUrl.js.map
 
 /***/ }),
 
@@ -57001,7 +57078,7 @@ class HashNormalizer extends Base {
         return spec.supportsHashAlgorithm(algorithm) && spec.supportsHashValue(content)
             ? {
                 alg: algorithm,
-                content: content
+                content
             }
             : undefined;
     }
