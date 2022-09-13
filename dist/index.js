@@ -54677,8 +54677,8 @@ var _ToolBuilder_extRefFactory, _ComponentBuilder_extRefFactory, _ComponentBuild
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ComponentBuilder = exports.ToolBuilder = void 0;
 const Enums = __importStar(__nccwpck_require__(4806));
-const Models = __importStar(__nccwpck_require__(3638));
 const packageJson_1 = __nccwpck_require__(6956);
+const Models = __importStar(__nccwpck_require__(3638));
 class ToolBuilder {
     constructor(extRefFactory) {
         _ToolBuilder_extRefFactory.set(this, void 0);
@@ -55112,11 +55112,11 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 var _PackageUrlFactory_instances, _PackageUrlFactory_finalizeQualifiers;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PackageUrlFactory = exports.ExternalReferenceFactory = void 0;
-const Models = __importStar(__nccwpck_require__(3638));
 const Enums = __importStar(__nccwpck_require__(4806));
-const packageUrl_1 = __nccwpck_require__(7671);
 const notUndefined_1 = __nccwpck_require__(4577);
-const packageUrl_2 = __nccwpck_require__(4350);
+const packageUrl_1 = __nccwpck_require__(4350);
+const Models = __importStar(__nccwpck_require__(3638));
+const packageUrl_2 = __nccwpck_require__(7671);
 class ExternalReferenceFactory {
     makeExternalReferences(data) {
         const refs = [];
@@ -55179,7 +55179,7 @@ class ExternalReferenceFactory {
 }
 exports.ExternalReferenceFactory = ExternalReferenceFactory;
 const npmDefaultRegistryMatcher = /^https?:\/\/registry\.npmjs\.org/;
-class PackageUrlFactory extends packageUrl_1.PackageUrlFactory {
+class PackageUrlFactory extends packageUrl_2.PackageUrlFactory {
     constructor() {
         super(...arguments);
         _PackageUrlFactory_instances.add(this);
@@ -55194,15 +55194,15 @@ class PackageUrlFactory extends packageUrl_1.PackageUrlFactory {
 exports.PackageUrlFactory = PackageUrlFactory;
 _PackageUrlFactory_instances = new WeakSet(), _PackageUrlFactory_finalizeQualifiers = function _PackageUrlFactory_finalizeQualifiers(purl) {
     const qualifiers = new Map(Object.entries(purl.qualifiers ?? {}));
-    const downloadUrl = qualifiers.get(packageUrl_2.PackageUrlQualifierNames.DownloadURL);
+    const downloadUrl = qualifiers.get(packageUrl_1.PackageUrlQualifierNames.DownloadURL);
     if (downloadUrl !== undefined) {
-        qualifiers.delete(packageUrl_2.PackageUrlQualifierNames.VcsUrl);
+        qualifiers.delete(packageUrl_1.PackageUrlQualifierNames.VcsUrl);
         if (npmDefaultRegistryMatcher.test(downloadUrl)) {
-            qualifiers.delete(packageUrl_2.PackageUrlQualifierNames.DownloadURL);
+            qualifiers.delete(packageUrl_1.PackageUrlQualifierNames.DownloadURL);
         }
     }
-    if (!qualifiers.has(packageUrl_2.PackageUrlQualifierNames.DownloadURL) && !qualifiers.has(packageUrl_2.PackageUrlQualifierNames.VcsUrl)) {
-        qualifiers.delete(packageUrl_2.PackageUrlQualifierNames.Checksum);
+    if (!qualifiers.has(packageUrl_1.PackageUrlQualifierNames.DownloadURL) && !qualifiers.has(packageUrl_1.PackageUrlQualifierNames.VcsUrl)) {
+        qualifiers.delete(packageUrl_1.PackageUrlQualifierNames.Checksum);
     }
     purl.qualifiers = qualifiers.size > 0
         ? Object.fromEntries(qualifiers.entries())
@@ -55628,13 +55628,13 @@ SPDX-License-Identifier: Apache-2.0
 Copyright (c) OWASP Foundation. All Rights Reserved.
 */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.treeIterator = void 0;
-exports.treeIterator = Symbol('iterator of a tree/nesting-like structure');
+exports.treeIteratorSymbol = void 0;
+exports.treeIteratorSymbol = Symbol('iterator of a tree/nesting-like structure');
 //# sourceMappingURL=tree.js.map
 
 /***/ }),
 
-/***/ 5121:
+/***/ 6351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -55681,15 +55681,71 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports._Resources = exports.Types = exports.Spec = exports.SPDX = exports.Serialize = exports.Models = exports.Factories = exports.Enums = exports.Builders = void 0;
-exports.Builders = __importStar(__nccwpck_require__(4770));
+exports.Types = exports.Spec = exports.SPDX = exports.Models = exports.Enums = void 0;
 exports.Enums = __importStar(__nccwpck_require__(4806));
-exports.Factories = __importStar(__nccwpck_require__(806));
 exports.Models = __importStar(__nccwpck_require__(3638));
-exports.Serialize = __importStar(__nccwpck_require__(524));
 exports.SPDX = __importStar(__nccwpck_require__(1989));
 exports.Spec = __importStar(__nccwpck_require__(2576));
 exports.Types = __importStar(__nccwpck_require__(2423));
+//# sourceMappingURL=index.common.js.map
+
+/***/ }),
+
+/***/ 5121:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+/*!
+This file is part of CycloneDX JavaScript Library.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+Copyright (c) OWASP Foundation. All Rights Reserved.
+*/
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports._Resources = exports.Serialize = exports.Factories = exports.Builders = void 0;
+__exportStar(__nccwpck_require__(6351), exports);
+exports.Builders = __importStar(__nccwpck_require__(4770));
+exports.Factories = __importStar(__nccwpck_require__(806));
+exports.Serialize = __importStar(__nccwpck_require__(524));
 exports._Resources = __importStar(__nccwpck_require__(3978));
 //# sourceMappingURL=index.node.js.map
 
@@ -55770,8 +55826,8 @@ var _Bom_version, _Bom_serialNumber;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Bom = void 0;
 const types_1 = __nccwpck_require__(2423);
-const metadata_1 = __nccwpck_require__(9612);
 const component_1 = __nccwpck_require__(8082);
+const metadata_1 = __nccwpck_require__(9612);
 class Bom {
     constructor(op = {}) {
         _Bom_version.set(this, 1);
@@ -55887,14 +55943,14 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 var _Component_bomRef, _Component_cpe;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ComponentRepository = exports.Component = void 0;
-const types_1 = __nccwpck_require__(2423);
-const bomRef_1 = __nccwpck_require__(8986);
-const hash_1 = __nccwpck_require__(8858);
-const externalReference_1 = __nccwpck_require__(885);
-const license_1 = __nccwpck_require__(922);
-const property_1 = __nccwpck_require__(7728);
 const sortableSet_1 = __nccwpck_require__(9206);
 const tree_1 = __nccwpck_require__(813);
+const types_1 = __nccwpck_require__(2423);
+const bomRef_1 = __nccwpck_require__(8986);
+const externalReference_1 = __nccwpck_require__(885);
+const hash_1 = __nccwpck_require__(8858);
+const license_1 = __nccwpck_require__(922);
+const property_1 = __nccwpck_require__(7728);
 class Component {
     constructor(type, name, op = {}) {
         _Component_bomRef.set(this, void 0);
@@ -55951,10 +56007,10 @@ class Component {
 exports.Component = Component;
 _Component_bomRef = new WeakMap(), _Component_cpe = new WeakMap();
 class ComponentRepository extends sortableSet_1.SortableSet {
-    *[tree_1.treeIterator]() {
+    *[tree_1.treeIteratorSymbol]() {
         for (const component of this) {
             yield component;
-            yield* component.components[tree_1.treeIterator]();
+            yield* component.components[tree_1.treeIteratorSymbol]();
         }
     }
 }
@@ -56254,8 +56310,8 @@ Copyright (c) OWASP Foundation. All Rights Reserved.
 */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Metadata = void 0;
-const tool_1 = __nccwpck_require__(8994);
 const organizationalContact_1 = __nccwpck_require__(5845);
+const tool_1 = __nccwpck_require__(8994);
 class Metadata {
     constructor(op = {}) {
         this.timestamp = op.timestamp;
@@ -56489,9 +56545,9 @@ Copyright (c) OWASP Foundation. All Rights Reserved.
 */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ToolRepository = exports.Tool = void 0;
-const hash_1 = __nccwpck_require__(8858);
-const externalReference_1 = __nccwpck_require__(885);
 const sortableSet_1 = __nccwpck_require__(9206);
+const externalReference_1 = __nccwpck_require__(885);
+const hash_1 = __nccwpck_require__(8858);
 class Tool {
     constructor(op = {}) {
         this.vendor = op.vendor;
@@ -56759,6 +56815,9 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -56766,14 +56825,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.XML = exports.JSON = exports.Types = void 0;
+__exportStar(__nccwpck_require__(6980), exports);
 exports.Types = __importStar(__nccwpck_require__(6592));
 __exportStar(__nccwpck_require__(4836), exports);
-__exportStar(__nccwpck_require__(6980), exports);
 exports.JSON = __importStar(__nccwpck_require__(6825));
 __exportStar(__nccwpck_require__(6374), exports);
 exports.XML = __importStar(__nccwpck_require__(5650));
@@ -56873,9 +56929,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Normalize = exports.Types = void 0;
-exports.Types = __importStar(__nccwpck_require__(2998));
+exports.Types = exports.Normalize = void 0;
 exports.Normalize = __importStar(__nccwpck_require__(2841));
+exports.Types = __importStar(__nccwpck_require__(2998));
 //# sourceMappingURL=index.js.map
 
 /***/ }),
@@ -56941,10 +56997,10 @@ var _Factory_spec, _LicenseNormalizer_instances, _LicenseNormalizer_normalizeNam
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DependencyGraphNormalizer = exports.PropertyNormalizer = exports.AttachmentNormalizer = exports.ExternalReferenceNormalizer = exports.SWIDNormalizer = exports.LicenseNormalizer = exports.ComponentNormalizer = exports.OrganizationalEntityNormalizer = exports.OrganizationalContactNormalizer = exports.HashNormalizer = exports.ToolNormalizer = exports.MetadataNormalizer = exports.BomNormalizer = exports.Factory = void 0;
 const notUndefined_1 = __nccwpck_require__(4577);
+const tree_1 = __nccwpck_require__(813);
 const Models = __importStar(__nccwpck_require__(3638));
 const spec_1 = __nccwpck_require__(2576);
 const types_1 = __nccwpck_require__(2998);
-const tree_1 = __nccwpck_require__(813);
 class Factory {
     constructor(spec) {
         _Factory_spec.set(this, void 0);
@@ -57291,11 +57347,11 @@ class DependencyGraphNormalizer extends Base {
         const allRefs = new Map();
         if (data.metadata.component !== undefined) {
             allRefs.set(data.metadata.component.bomRef, data.metadata.component.dependencies);
-            for (const component of data.metadata.component.components[tree_1.treeIterator]()) {
+            for (const component of data.metadata.component.components[tree_1.treeIteratorSymbol]()) {
                 allRefs.set(component.bomRef, component.dependencies);
             }
         }
-        for (const component of data.components[tree_1.treeIterator]()) {
+        for (const component of data.components[tree_1.treeIteratorSymbol]()) {
             allRefs.set(component.bomRef, component.dependencies);
         }
         const normalized = [];
@@ -57518,9 +57574,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Normalize = exports.Types = void 0;
-exports.Types = __importStar(__nccwpck_require__(2908));
+exports.Types = exports.Normalize = void 0;
 exports.Normalize = __importStar(__nccwpck_require__(1859));
+exports.Types = __importStar(__nccwpck_require__(2908));
 //# sourceMappingURL=index.js.map
 
 /***/ }),
@@ -57586,10 +57642,10 @@ var _Factory_spec, _LicenseNormalizer_instances, _LicenseNormalizer_normalizeNam
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DependencyGraphNormalizer = exports.PropertyNormalizer = exports.AttachmentNormalizer = exports.ExternalReferenceNormalizer = exports.SWIDNormalizer = exports.LicenseNormalizer = exports.ComponentNormalizer = exports.OrganizationalEntityNormalizer = exports.OrganizationalContactNormalizer = exports.HashNormalizer = exports.ToolNormalizer = exports.MetadataNormalizer = exports.BomNormalizer = exports.Factory = void 0;
 const notUndefined_1 = __nccwpck_require__(4577);
+const tree_1 = __nccwpck_require__(813);
 const Models = __importStar(__nccwpck_require__(3638));
 const spec_1 = __nccwpck_require__(2576);
 const types_1 = __nccwpck_require__(2908);
-const tree_1 = __nccwpck_require__(813);
 class Factory {
     constructor(spec) {
         _Factory_spec.set(this, void 0);
@@ -58054,11 +58110,11 @@ class DependencyGraphNormalizer extends Base {
         const allRefs = new Map();
         if (data.metadata.component !== undefined) {
             allRefs.set(data.metadata.component.bomRef, data.metadata.component.dependencies);
-            for (const component of data.metadata.component.components[tree_1.treeIterator]()) {
+            for (const component of data.metadata.component.components[tree_1.treeIteratorSymbol]()) {
                 allRefs.set(component.bomRef, component.dependencies);
             }
         }
-        for (const component of data.components[tree_1.treeIterator]()) {
+        for (const component of data.components[tree_1.treeIteratorSymbol]()) {
             allRefs.set(component.bomRef, component.dependencies);
         }
         const normalized = [];
@@ -58271,8 +58327,8 @@ Copyright (c) OWASP Foundation. All Rights Reserved.
 */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.XmlSerializer = void 0;
-const xmlBaseSerializer_1 = __nccwpck_require__(6577);
 const universal_node_xml_1 = __nccwpck_require__(2104);
+const xmlBaseSerializer_1 = __nccwpck_require__(6577);
 class XmlSerializer extends xmlBaseSerializer_1.XmlBaseSerializer {
     _serialize(normalizedBom, options = {}) {
         return (0, universal_node_xml_1.stringifyFallback)(normalizedBom, options);
