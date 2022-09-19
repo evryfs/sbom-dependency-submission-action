@@ -55963,7 +55963,7 @@ class Component {
         this.copyright = op.copyright;
         this.externalReferences = op.externalReferences ?? new externalReference_1.ExternalReferenceRepository();
         this.group = op.group;
-        this.hashes = op.hashes ?? new hash_1.HashRepository();
+        this.hashes = op.hashes ?? new hash_1.HashDictionary();
         this.licenses = op.licenses ?? new license_1.LicenseRepository();
         this.publisher = op.publisher;
         this.purl = op.purl;
@@ -56092,23 +56092,26 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _HashRepository_instances, _HashRepository_compareItems;
+var _HashDictionary_instances, _HashDictionary_compareItems;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.HashRepository = void 0;
-class HashRepository extends Map {
+exports.HashRepository = exports.HashDictionary = void 0;
+class HashDictionary extends Map {
     constructor() {
         super(...arguments);
-        _HashRepository_instances.add(this);
+        _HashDictionary_instances.add(this);
     }
     sorted() {
-        return Array.from(this.entries()).sort(__classPrivateFieldGet(this, _HashRepository_instances, "m", _HashRepository_compareItems));
+        return Array.from(this.entries()).sort(__classPrivateFieldGet(this, _HashDictionary_instances, "m", _HashDictionary_compareItems));
     }
 }
-exports.HashRepository = HashRepository;
-_HashRepository_instances = new WeakSet(), _HashRepository_compareItems = function _HashRepository_compareItems([a1, c1], [a2, c2]) {
+exports.HashDictionary = HashDictionary;
+_HashDictionary_instances = new WeakSet(), _HashDictionary_compareItems = function _HashDictionary_compareItems([a1, c1], [a2, c2]) {
     return a1.localeCompare(a2) ||
         c1.localeCompare(c2);
 };
+class HashRepository extends HashDictionary {
+}
+exports.HashRepository = HashRepository;
 //# sourceMappingURL=hash.js.map
 
 /***/ }),
@@ -56553,7 +56556,7 @@ class Tool {
         this.vendor = op.vendor;
         this.name = op.name;
         this.version = op.version;
-        this.hashes = op.hashes ?? new hash_1.HashRepository();
+        this.hashes = op.hashes ?? new hash_1.HashDictionary();
         this.externalReferences = op.externalReferences ?? new externalReference_1.ExternalReferenceRepository();
     }
     compare(other) {
@@ -57074,7 +57077,7 @@ class BomNormalizer extends Base {
             serialNumber: data.serialNumber,
             metadata: this._factory.makeForMetadata().normalize(data.metadata, options),
             components: data.components.size > 0
-                ? this._factory.makeForComponent().normalizeRepository(data.components, options)
+                ? this._factory.makeForComponent().normalizeIterable(data.components, options)
                 : [],
             dependencies: this._factory.spec.supportsDependencyGraph
                 ? this._factory.makeForDependencyGraph().normalize(data, options)
@@ -57089,10 +57092,10 @@ class MetadataNormalizer extends Base {
         return {
             timestamp: data.timestamp?.toISOString(),
             tools: data.tools.size > 0
-                ? this._factory.makeForTool().normalizeRepository(data.tools, options)
+                ? this._factory.makeForTool().normalizeIterable(data.tools, options)
                 : undefined,
             authors: data.authors.size > 0
-                ? this._factory.makeForOrganizationalContact().normalizeRepository(data.authors, options)
+                ? this._factory.makeForOrganizationalContact().normalizeIterable(data.authors, options)
                 : undefined,
             component: data.component === undefined
                 ? undefined
@@ -57108,20 +57111,24 @@ class MetadataNormalizer extends Base {
 }
 exports.MetadataNormalizer = MetadataNormalizer;
 class ToolNormalizer extends Base {
+    constructor() {
+        super(...arguments);
+        this.normalizeRepository = this.normalizeIterable;
+    }
     normalize(data, options) {
         return {
             vendor: data.vendor || undefined,
             name: data.name || undefined,
             version: data.version || undefined,
             hashes: data.hashes.size > 0
-                ? this._factory.makeForHash().normalizeRepository(data.hashes, options)
+                ? this._factory.makeForHash().normalizeIterable(data.hashes, options)
                 : undefined,
             externalReferences: this._factory.spec.supportsToolReferences && data.externalReferences.size > 0
-                ? this._factory.makeForExternalReference().normalizeRepository(data.externalReferences, options)
+                ? this._factory.makeForExternalReference().normalizeIterable(data.externalReferences, options)
                 : undefined
         };
     }
-    normalizeRepository(data, options) {
+    normalizeIterable(data, options) {
         return (options.sortLists ?? false
             ? data.sorted()
             : Array.from(data)).map(t => this.normalize(t, options));
@@ -57129,6 +57136,10 @@ class ToolNormalizer extends Base {
 }
 exports.ToolNormalizer = ToolNormalizer;
 class HashNormalizer extends Base {
+    constructor() {
+        super(...arguments);
+        this.normalizeRepository = this.normalizeIterable;
+    }
     normalize([algorithm, content], options) {
         const spec = this._factory.spec;
         return spec.supportsHashAlgorithm(algorithm) && spec.supportsHashValue(content)
@@ -57138,7 +57149,7 @@ class HashNormalizer extends Base {
             }
             : undefined;
     }
-    normalizeRepository(data, options) {
+    normalizeIterable(data, options) {
         return (options.sortLists ?? false
             ? data.sorted()
             : Array.from(data)).map(h => this.normalize(h, options)).filter(notUndefined_1.isNotUndefined);
@@ -57146,6 +57157,10 @@ class HashNormalizer extends Base {
 }
 exports.HashNormalizer = HashNormalizer;
 class OrganizationalContactNormalizer extends Base {
+    constructor() {
+        super(...arguments);
+        this.normalizeRepository = this.normalizeIterable;
+    }
     normalize(data, options) {
         return {
             name: data.name || undefined,
@@ -57155,7 +57170,7 @@ class OrganizationalContactNormalizer extends Base {
             phone: data.phone || undefined
         };
     }
-    normalizeRepository(data, options) {
+    normalizeIterable(data, options) {
         return (options.sortLists ?? false
             ? data.sorted()
             : Array.from(data)).map(c => this.normalize(c, options));
@@ -57172,13 +57187,17 @@ class OrganizationalEntityNormalizer extends Base {
                 ? urls
                 : undefined,
             contact: data.contact.size > 0
-                ? this._factory.makeForOrganizationalContact().normalizeRepository(data.contact, options)
+                ? this._factory.makeForOrganizationalContact().normalizeIterable(data.contact, options)
                 : undefined
         };
     }
 }
 exports.OrganizationalEntityNormalizer = OrganizationalEntityNormalizer;
 class ComponentNormalizer extends Base {
+    constructor() {
+        super(...arguments);
+        this.normalizeRepository = this.normalizeIterable;
+    }
     normalize(data, options) {
         const spec = this._factory.spec;
         const version = data.version ?? '';
@@ -57199,10 +57218,10 @@ class ComponentNormalizer extends Base {
                 description: data.description || undefined,
                 scope: data.scope,
                 hashes: data.hashes.size > 0
-                    ? this._factory.makeForHash().normalizeRepository(data.hashes, options)
+                    ? this._factory.makeForHash().normalizeIterable(data.hashes, options)
                     : undefined,
                 licenses: data.licenses.size > 0
-                    ? this._factory.makeForLicense().normalizeRepository(data.licenses, options)
+                    ? this._factory.makeForLicense().normalizeIterable(data.licenses, options)
                     : undefined,
                 copyright: data.copyright || undefined,
                 cpe: data.cpe || undefined,
@@ -57211,18 +57230,18 @@ class ComponentNormalizer extends Base {
                     ? undefined
                     : this._factory.makeForSWID().normalize(data.swid, options),
                 externalReferences: data.externalReferences.size > 0
-                    ? this._factory.makeForExternalReference().normalizeRepository(data.externalReferences, options)
+                    ? this._factory.makeForExternalReference().normalizeIterable(data.externalReferences, options)
                     : undefined,
                 properties: spec.supportsProperties(data) && data.properties.size > 0
-                    ? this._factory.makeForProperty().normalizeRepository(data.properties, options)
+                    ? this._factory.makeForProperty().normalizeIterable(data.properties, options)
                     : undefined,
                 components: data.components.size > 0
-                    ? this.normalizeRepository(data.components, options)
+                    ? this.normalizeIterable(data.components, options)
                     : undefined
             }
             : undefined;
     }
-    normalizeRepository(data, options) {
+    normalizeIterable(data, options) {
         return (options.sortLists ?? false
             ? data.sorted()
             : Array.from(data)).map(c => this.normalize(c, options)).filter(notUndefined_1.isNotUndefined);
@@ -57233,6 +57252,7 @@ class LicenseNormalizer extends Base {
     constructor() {
         super(...arguments);
         _LicenseNormalizer_instances.add(this);
+        this.normalizeRepository = this.normalizeIterable;
     }
     normalize(data, options) {
         switch (true) {
@@ -57246,7 +57266,7 @@ class LicenseNormalizer extends Base {
                 throw new TypeError('Unexpected LicenseChoice');
         }
     }
-    normalizeRepository(data, options) {
+    normalizeIterable(data, options) {
         return (options.sortLists ?? false
             ? data.sorted()
             : Array.from(data)).map(c => this.normalize(c, options));
@@ -57298,6 +57318,10 @@ class SWIDNormalizer extends Base {
 }
 exports.SWIDNormalizer = SWIDNormalizer;
 class ExternalReferenceNormalizer extends Base {
+    constructor() {
+        super(...arguments);
+        this.normalizeRepository = this.normalizeIterable;
+    }
     normalize(data, options) {
         return this._factory.spec.supportsExternalReferenceType(data.type)
             ? {
@@ -57307,7 +57331,7 @@ class ExternalReferenceNormalizer extends Base {
             }
             : undefined;
     }
-    normalizeRepository(data, options) {
+    normalizeIterable(data, options) {
         return (options.sortLists ?? false
             ? data.sorted()
             : Array.from(data)).map(r => this.normalize(r, options)).filter(notUndefined_1.isNotUndefined);
@@ -57325,13 +57349,17 @@ class AttachmentNormalizer extends Base {
 }
 exports.AttachmentNormalizer = AttachmentNormalizer;
 class PropertyNormalizer extends Base {
+    constructor() {
+        super(...arguments);
+        this.normalizeRepository = this.normalizeIterable;
+    }
     normalize(data, options) {
         return {
             name: data.name,
             value: data.value
         };
     }
-    normalizeRepository(data, options) {
+    normalizeIterable(data, options) {
         return (options.sortLists ?? false
             ? data.sorted()
             : Array.from(data)).map(p => this.normalize(p, options));
@@ -57715,7 +57743,7 @@ class BomNormalizer extends Base {
             type: 'element',
             name: 'components',
             children: data.components.size > 0
-                ? this._factory.makeForComponent().normalizeRepository(data.components, options, 'component')
+                ? this._factory.makeForComponent().normalizeIterable(data.components, options, 'component')
                 : undefined
         };
         return {
@@ -57753,7 +57781,7 @@ class MetadataNormalizer extends Base {
             ? {
                 type: 'element',
                 name: 'tools',
-                children: this._factory.makeForTool().normalizeRepository(data.tools, options, 'tool')
+                children: this._factory.makeForTool().normalizeIterable(data.tools, options, 'tool')
             }
             : undefined;
         const authors = data.authors.size > 0
@@ -57761,7 +57789,7 @@ class MetadataNormalizer extends Base {
                 type: 'element',
                 name: 'authors',
                 children: this._factory.makeForOrganizationalContact()
-                    .normalizeRepository(data.authors, options, 'author')
+                    .normalizeIterable(data.authors, options, 'author')
             }
             : undefined;
         return {
@@ -57786,12 +57814,16 @@ class MetadataNormalizer extends Base {
 }
 exports.MetadataNormalizer = MetadataNormalizer;
 class ToolNormalizer extends Base {
+    constructor() {
+        super(...arguments);
+        this.normalizeRepository = this.normalizeIterable;
+    }
     normalize(data, options, elementName) {
         const hashes = data.hashes.size > 0
             ? {
                 type: 'element',
                 name: 'hashes',
-                children: this._factory.makeForHash().normalizeRepository(data.hashes, options, 'hash')
+                children: this._factory.makeForHash().normalizeIterable(data.hashes, options, 'hash')
             }
             : undefined;
         const externalReferences = this._factory.spec.supportsToolReferences && data.externalReferences.size > 0
@@ -57799,7 +57831,7 @@ class ToolNormalizer extends Base {
                 type: 'element',
                 name: 'externalReferences',
                 children: this._factory.makeForExternalReference()
-                    .normalizeRepository(data.externalReferences, options, 'reference')
+                    .normalizeIterable(data.externalReferences, options, 'reference')
             }
             : undefined;
         return {
@@ -57814,7 +57846,7 @@ class ToolNormalizer extends Base {
             ].filter(notUndefined_1.isNotUndefined)
         };
     }
-    normalizeRepository(data, options, elementName) {
+    normalizeIterable(data, options, elementName) {
         return (options.sortLists ?? false
             ? data.sorted()
             : Array.from(data)).map(t => this.normalize(t, options, elementName));
@@ -57822,6 +57854,10 @@ class ToolNormalizer extends Base {
 }
 exports.ToolNormalizer = ToolNormalizer;
 class HashNormalizer extends Base {
+    constructor() {
+        super(...arguments);
+        this.normalizeRepository = this.normalizeIterable;
+    }
     normalize([algorithm, content], options, elementName) {
         const spec = this._factory.spec;
         return spec.supportsHashAlgorithm(algorithm) && spec.supportsHashValue(content)
@@ -57833,7 +57869,7 @@ class HashNormalizer extends Base {
             }
             : undefined;
     }
-    normalizeRepository(data, options, elementName) {
+    normalizeIterable(data, options, elementName) {
         return (options.sortLists ?? false
             ? data.sorted()
             : Array.from(data)).map(h => this.normalize(h, options, elementName)).filter(notUndefined_1.isNotUndefined);
@@ -57841,6 +57877,10 @@ class HashNormalizer extends Base {
 }
 exports.HashNormalizer = HashNormalizer;
 class OrganizationalContactNormalizer extends Base {
+    constructor() {
+        super(...arguments);
+        this.normalizeRepository = this.normalizeIterable;
+    }
     normalize(data, options, elementName) {
         return {
             type: 'element',
@@ -57852,7 +57892,7 @@ class OrganizationalContactNormalizer extends Base {
             ].filter(notUndefined_1.isNotUndefined)
         };
     }
-    normalizeRepository(data, options, elementName) {
+    normalizeIterable(data, options, elementName) {
         return (options.sortLists ?? false
             ? data.sorted()
             : Array.from(data)).map(c => this.normalize(c, options, elementName));
@@ -57868,13 +57908,17 @@ class OrganizationalEntityNormalizer extends Base {
                 makeOptionalTextElement(data.name, 'name'),
                 ...makeTextElementIter(data.url, options, 'url')
                     .filter(({ children: u }) => types_1.XmlSchema.isAnyURI(u)),
-                ...this._factory.makeForOrganizationalContact().normalizeRepository(data.contact, options, 'contact')
+                ...this._factory.makeForOrganizationalContact().normalizeIterable(data.contact, options, 'contact')
             ].filter(notUndefined_1.isNotUndefined)
         };
     }
 }
 exports.OrganizationalEntityNormalizer = OrganizationalEntityNormalizer;
 class ComponentNormalizer extends Base {
+    constructor() {
+        super(...arguments);
+        this.normalizeRepository = this.normalizeIterable;
+    }
     normalize(data, options, elementName) {
         const spec = this._factory.spec;
         if (!spec.supportsComponentType(data.type)) {
@@ -57890,14 +57934,14 @@ class ComponentNormalizer extends Base {
             ? {
                 type: 'element',
                 name: 'hashes',
-                children: this._factory.makeForHash().normalizeRepository(data.hashes, options, 'hash')
+                children: this._factory.makeForHash().normalizeIterable(data.hashes, options, 'hash')
             }
             : undefined;
         const licenses = data.licenses.size > 0
             ? {
                 type: 'element',
                 name: 'licenses',
-                children: this._factory.makeForLicense().normalizeRepository(data.licenses, options)
+                children: this._factory.makeForLicense().normalizeIterable(data.licenses, options)
             }
             : undefined;
         const swid = data.swid === undefined
@@ -57908,21 +57952,21 @@ class ComponentNormalizer extends Base {
                 type: 'element',
                 name: 'externalReferences',
                 children: this._factory.makeForExternalReference()
-                    .normalizeRepository(data.externalReferences, options, 'reference')
+                    .normalizeIterable(data.externalReferences, options, 'reference')
             }
             : undefined;
         const properties = spec.supportsProperties(data) && data.properties.size > 0
             ? {
                 type: 'element',
                 name: 'properties',
-                children: this._factory.makeForProperty().normalizeRepository(data.properties, options, 'property')
+                children: this._factory.makeForProperty().normalizeIterable(data.properties, options, 'property')
             }
             : undefined;
         const components = data.components.size > 0
             ? {
                 type: 'element',
                 name: 'components',
-                children: this.normalizeRepository(data.components, options, 'component')
+                children: this.normalizeIterable(data.components, options, 'component')
             }
             : undefined;
         return {
@@ -57953,7 +57997,7 @@ class ComponentNormalizer extends Base {
             ].filter(notUndefined_1.isNotUndefined)
         };
     }
-    normalizeRepository(data, options, elementName) {
+    normalizeIterable(data, options, elementName) {
         return (options.sortLists ?? false
             ? data.sorted()
             : Array.from(data)).map(c => this.normalize(c, options, elementName)).filter(notUndefined_1.isNotUndefined);
@@ -57964,6 +58008,7 @@ class LicenseNormalizer extends Base {
     constructor() {
         super(...arguments);
         _LicenseNormalizer_instances.add(this);
+        this.normalizeRepository = this.normalizeIterable;
     }
     normalize(data, options) {
         switch (true) {
@@ -57977,7 +58022,7 @@ class LicenseNormalizer extends Base {
                 throw new TypeError('Unexpected LicenseChoice');
         }
     }
-    normalizeRepository(data, options) {
+    normalizeIterable(data, options) {
         return (options.sortLists ?? false
             ? data.sorted()
             : Array.from(data)).map(c => this.normalize(c, options));
@@ -58045,6 +58090,10 @@ class SWIDNormalizer extends Base {
 }
 exports.SWIDNormalizer = SWIDNormalizer;
 class ExternalReferenceNormalizer extends Base {
+    constructor() {
+        super(...arguments);
+        this.normalizeRepository = this.normalizeIterable;
+    }
     normalize(data, options, elementName) {
         const url = data.url.toString();
         return this._factory.spec.supportsExternalReferenceType(data.type) &&
@@ -58062,7 +58111,7 @@ class ExternalReferenceNormalizer extends Base {
             }
             : undefined;
     }
-    normalizeRepository(data, options, elementName) {
+    normalizeIterable(data, options, elementName) {
         return (options.sortLists ?? false
             ? data.sorted()
             : Array.from(data)).map(r => this.normalize(r, options, elementName)).filter(notUndefined_1.isNotUndefined);
@@ -58084,6 +58133,10 @@ class AttachmentNormalizer extends Base {
 }
 exports.AttachmentNormalizer = AttachmentNormalizer;
 class PropertyNormalizer extends Base {
+    constructor() {
+        super(...arguments);
+        this.normalizeRepository = this.normalizeIterable;
+    }
     normalize(data, options, elementName) {
         return {
             type: 'element',
@@ -58094,7 +58147,7 @@ class PropertyNormalizer extends Base {
             children: data.value
         };
     }
-    normalizeRepository(data, options, elementName) {
+    normalizeIterable(data, options, elementName) {
         return (options.sortLists ?? false
             ? data.sorted()
             : Array.from(data)).map(p => this.normalize(p, options, elementName));
