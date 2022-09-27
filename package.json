@@ -29,7 +29,7 @@
     "@actions/core": "^1.9.1",
     "@actions/github": "^5.1.0",
     "@cyclonedx/cyclonedx-library": "^1.5.1",
-    "@github/dependency-submission-toolkit": "^1.2.2"
+    "@github/dependency-submission-toolkit": "^1.2.3"
   },
   "devDependencies": {
     "@types/jest": "^27.5.2",
