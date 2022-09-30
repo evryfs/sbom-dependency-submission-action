@@ -56368,6 +56368,174 @@ module.exports = require("zlib");
 
 /***/ }),
 
+/***/ 5246:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*!
+This file is part of CycloneDX JavaScript Library.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+Copyright (c) OWASP Foundation. All Rights Reserved.
+*/
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.isNotUndefined = void 0;
+function isNotUndefined(value) {
+    return value !== undefined;
+}
+exports.isNotUndefined = isNotUndefined;
+//# sourceMappingURL=notUndefined.js.map
+
+/***/ }),
+
+/***/ 7557:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*!
+This file is part of CycloneDX JavaScript Library.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+Copyright (c) OWASP Foundation. All Rights Reserved.
+*/
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.splitNameGroup = void 0;
+function splitNameGroup(data) {
+    return data[0] === '@'
+        ? data.split('/', 2).reverse()
+        : [data];
+}
+exports.splitNameGroup = splitNameGroup;
+//# sourceMappingURL=packageJson.js.map
+
+/***/ }),
+
+/***/ 613:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*!
+This file is part of CycloneDX JavaScript Library.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+Copyright (c) OWASP Foundation. All Rights Reserved.
+*/
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PackageUrlQualifierNames = void 0;
+var PackageUrlQualifierNames;
+(function (PackageUrlQualifierNames) {
+    PackageUrlQualifierNames["DownloadURL"] = "download_url";
+    PackageUrlQualifierNames["VcsUrl"] = "vcs_url";
+    PackageUrlQualifierNames["Checksum"] = "checksum";
+})(PackageUrlQualifierNames = exports.PackageUrlQualifierNames || (exports.PackageUrlQualifierNames = {}));
+//# sourceMappingURL=packageUrl.js.map
+
+/***/ }),
+
+/***/ 4267:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*!
+This file is part of CycloneDX JavaScript Library.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+Copyright (c) OWASP Foundation. All Rights Reserved.
+*/
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SortableSet = void 0;
+class SortableSet extends Set {
+    sorted() {
+        return Array.from(this).sort((a, b) => a.compare(b));
+    }
+}
+exports.SortableSet = SortableSet;
+//# sourceMappingURL=sortableSet.js.map
+
+/***/ }),
+
+/***/ 1617:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*!
+This file is part of CycloneDX JavaScript Library.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+Copyright (c) OWASP Foundation. All Rights Reserved.
+*/
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.treeIteratorSymbol = void 0;
+exports.treeIteratorSymbol = Symbol('iterator of a tree/nesting-like structure');
+//# sourceMappingURL=tree.js.map
+
+/***/ }),
+
 /***/ 4301:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -56391,29 +56559,6 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 Copyright (c) OWASP Foundation. All Rights Reserved.
 */
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
     if (kind === "m") throw new TypeError("Private method is not writable");
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
@@ -56428,9 +56573,9 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 var _ToolBuilder_extRefFactory, _ComponentBuilder_extRefFactory, _ComponentBuilder_licenseFactory;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ComponentBuilder = exports.ToolBuilder = void 0;
-const Enums = __importStar(__nccwpck_require__(4806));
-const packageJson_1 = __nccwpck_require__(6956);
-const Models = __importStar(__nccwpck_require__(3638));
+const packageJson_1 = __nccwpck_require__(7557);
+const Enums = __nccwpck_require__(4806);
+const Models = __nccwpck_require__(3638);
 class ToolBuilder {
     constructor(extRefFactory) {
         _ToolBuilder_extRefFactory.set(this, void 0);
@@ -56510,7 +56655,7 @@ _ComponentBuilder_extRefFactory = new WeakMap(), _ComponentBuilder_licenseFactor
 /***/ }),
 
 /***/ 4770:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
@@ -56532,33 +56677,10 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 Copyright (c) OWASP Foundation. All Rights Reserved.
 */
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FromPackageJson = exports.FromNodePackageJson = void 0;
-exports.FromNodePackageJson = __importStar(__nccwpck_require__(4301));
-exports.FromPackageJson = __importStar(__nccwpck_require__(4301));
+exports.FromNodePackageJson = __nccwpck_require__(4301);
+exports.FromPackageJson = __nccwpck_require__(4301);
 //# sourceMappingURL=index.node.js.map
 
 /***/ }),
@@ -56833,29 +56955,6 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 Copyright (c) OWASP Foundation. All Rights Reserved.
 */
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
@@ -56864,10 +56963,10 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 var _PackageUrlFactory_instances, _PackageUrlFactory_finalizeQualifiers;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PackageUrlFactory = exports.ExternalReferenceFactory = void 0;
-const Enums = __importStar(__nccwpck_require__(4806));
-const notUndefined_1 = __nccwpck_require__(4577);
-const packageUrl_1 = __nccwpck_require__(4350);
-const Models = __importStar(__nccwpck_require__(3638));
+const notUndefined_1 = __nccwpck_require__(5246);
+const packageUrl_1 = __nccwpck_require__(613);
+const Enums = __nccwpck_require__(4806);
+const Models = __nccwpck_require__(3638);
 const packageUrl_2 = __nccwpck_require__(7671);
 class ExternalReferenceFactory {
     makeExternalReferences(data) {
@@ -57043,26 +57142,14 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
 }));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
 var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FromPackageJson = exports.FromNodePackageJson = void 0;
 __exportStar(__nccwpck_require__(1992), exports);
-exports.FromNodePackageJson = __importStar(__nccwpck_require__(1817));
-exports.FromPackageJson = __importStar(__nccwpck_require__(1817));
+exports.FromNodePackageJson = __nccwpck_require__(1817);
+exports.FromPackageJson = __nccwpck_require__(1817);
 //# sourceMappingURL=index.node.js.map
 
 /***/ }),
@@ -57168,8 +57255,8 @@ var _PackageUrlFactory_type;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PackageUrlFactory = void 0;
 const packageurl_js_1 = __nccwpck_require__(8915);
+const packageUrl_1 = __nccwpck_require__(613);
 const enums_1 = __nccwpck_require__(4806);
-const packageUrl_1 = __nccwpck_require__(4350);
 class PackageUrlFactory {
     constructor(type) {
         _PackageUrlFactory_type.set(this, void 0);
@@ -57218,176 +57305,8 @@ _PackageUrlFactory_type = new WeakMap();
 
 /***/ }),
 
-/***/ 4577:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-/*!
-This file is part of CycloneDX JavaScript Library.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-SPDX-License-Identifier: Apache-2.0
-Copyright (c) OWASP Foundation. All Rights Reserved.
-*/
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.isNotUndefined = void 0;
-function isNotUndefined(value) {
-    return value !== undefined;
-}
-exports.isNotUndefined = isNotUndefined;
-//# sourceMappingURL=notUndefined.js.map
-
-/***/ }),
-
-/***/ 6956:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-/*!
-This file is part of CycloneDX JavaScript Library.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-SPDX-License-Identifier: Apache-2.0
-Copyright (c) OWASP Foundation. All Rights Reserved.
-*/
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.splitNameGroup = void 0;
-function splitNameGroup(data) {
-    return data[0] === '@'
-        ? data.split('/', 2).reverse()
-        : [data];
-}
-exports.splitNameGroup = splitNameGroup;
-//# sourceMappingURL=packageJson.js.map
-
-/***/ }),
-
-/***/ 4350:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-/*!
-This file is part of CycloneDX JavaScript Library.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-SPDX-License-Identifier: Apache-2.0
-Copyright (c) OWASP Foundation. All Rights Reserved.
-*/
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PackageUrlQualifierNames = void 0;
-var PackageUrlQualifierNames;
-(function (PackageUrlQualifierNames) {
-    PackageUrlQualifierNames["DownloadURL"] = "download_url";
-    PackageUrlQualifierNames["VcsUrl"] = "vcs_url";
-    PackageUrlQualifierNames["Checksum"] = "checksum";
-})(PackageUrlQualifierNames = exports.PackageUrlQualifierNames || (exports.PackageUrlQualifierNames = {}));
-//# sourceMappingURL=packageUrl.js.map
-
-/***/ }),
-
-/***/ 9206:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-/*!
-This file is part of CycloneDX JavaScript Library.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-SPDX-License-Identifier: Apache-2.0
-Copyright (c) OWASP Foundation. All Rights Reserved.
-*/
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SortableSet = void 0;
-class SortableSet extends Set {
-    sorted() {
-        return Array.from(this).sort((a, b) => a.compare(b));
-    }
-}
-exports.SortableSet = SortableSet;
-//# sourceMappingURL=sortableSet.js.map
-
-/***/ }),
-
-/***/ 813:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-/*!
-This file is part of CycloneDX JavaScript Library.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-SPDX-License-Identifier: Apache-2.0
-Copyright (c) OWASP Foundation. All Rights Reserved.
-*/
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.treeIteratorSymbol = void 0;
-exports.treeIteratorSymbol = Symbol('iterator of a tree/nesting-like structure');
-//# sourceMappingURL=tree.js.map
-
-/***/ }),
-
 /***/ 6351:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
@@ -57409,36 +57328,13 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 Copyright (c) OWASP Foundation. All Rights Reserved.
 */
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Types = exports.Spec = exports.SPDX = exports.Models = exports.Enums = void 0;
-exports.Enums = __importStar(__nccwpck_require__(4806));
-exports.Models = __importStar(__nccwpck_require__(3638));
-exports.SPDX = __importStar(__nccwpck_require__(1989));
-exports.Spec = __importStar(__nccwpck_require__(2576));
-exports.Types = __importStar(__nccwpck_require__(2423));
+exports.Enums = __nccwpck_require__(4806);
+exports.Models = __nccwpck_require__(3638);
+exports.SPDX = __nccwpck_require__(1989);
+exports.Spec = __nccwpck_require__(2576);
+exports.Types = __nccwpck_require__(2423);
 //# sourceMappingURL=index.common.js.map
 
 /***/ }),
@@ -57477,28 +57373,16 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
 }));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
 var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports._Resources = exports.Serialize = exports.Factories = exports.Builders = void 0;
 __exportStar(__nccwpck_require__(6351), exports);
-exports.Builders = __importStar(__nccwpck_require__(4770));
-exports.Factories = __importStar(__nccwpck_require__(806));
-exports.Serialize = __importStar(__nccwpck_require__(524));
-exports._Resources = __importStar(__nccwpck_require__(3978));
+exports.Builders = __nccwpck_require__(4770);
+exports.Factories = __nccwpck_require__(806);
+exports.Serialize = __nccwpck_require__(524);
+exports._Resources = __nccwpck_require__(3978);
 //# sourceMappingURL=index.node.js.map
 
 /***/ }),
@@ -57695,8 +57579,8 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 var _Component_bomRef, _Component_cpe;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ComponentRepository = exports.Component = void 0;
-const sortableSet_1 = __nccwpck_require__(9206);
-const tree_1 = __nccwpck_require__(813);
+const sortableSet_1 = __nccwpck_require__(4267);
+const tree_1 = __nccwpck_require__(1617);
 const types_1 = __nccwpck_require__(2423);
 const bomRef_1 = __nccwpck_require__(8986);
 const externalReference_1 = __nccwpck_require__(885);
@@ -57796,7 +57680,7 @@ Copyright (c) OWASP Foundation. All Rights Reserved.
 */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExternalReferenceRepository = exports.ExternalReference = void 0;
-const sortableSet_1 = __nccwpck_require__(9206);
+const sortableSet_1 = __nccwpck_require__(4267);
 class ExternalReference {
     constructor(url, type, op = {}) {
         this.url = url;
@@ -58107,7 +57991,7 @@ Copyright (c) OWASP Foundation. All Rights Reserved.
 */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OrganizationalContactRepository = exports.OrganizationalContact = void 0;
-const sortableSet_1 = __nccwpck_require__(9206);
+const sortableSet_1 = __nccwpck_require__(4267);
 class OrganizationalContact {
     constructor(op = {}) {
         this.name = op.name;
@@ -58191,7 +58075,7 @@ Copyright (c) OWASP Foundation. All Rights Reserved.
 */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PropertyRepository = exports.Property = void 0;
-const sortableSet_1 = __nccwpck_require__(9206);
+const sortableSet_1 = __nccwpck_require__(4267);
 class Property {
     constructor(name, value) {
         this.name = name;
@@ -58300,7 +58184,7 @@ Copyright (c) OWASP Foundation. All Rights Reserved.
 */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ToolRepository = exports.Tool = void 0;
-const sortableSet_1 = __nccwpck_require__(9206);
+const sortableSet_1 = __nccwpck_require__(4267);
 const externalReference_1 = __nccwpck_require__(885);
 const hash_1 = __nccwpck_require__(8858);
 class Tool {
@@ -58326,7 +58210,7 @@ exports.ToolRepository = ToolRepository;
 /***/ }),
 
 /***/ 3978:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
@@ -58348,39 +58232,36 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 Copyright (c) OWASP Foundation. All Rights Reserved.
 */
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FILES = exports.ROOT = void 0;
-const path_1 = __importDefault(__nccwpck_require__(1017));
+const path = __nccwpck_require__(1017);
 const spec_1 = __nccwpck_require__(2576);
-exports.ROOT = path_1.default.resolve(__dirname, '..', 'res');
+exports.ROOT = __nccwpck_require__.ab + "res";
 exports.FILES = Object.freeze({
     CDX: Object.freeze({
         XML_SCHEMA: Object.freeze(Object.fromEntries([
-            [spec_1.Version.v1dot0, path_1.default.resolve(exports.ROOT, 'bom-1.0.SNAPSHOT.xsd')],
-            [spec_1.Version.v1dot1, path_1.default.resolve(exports.ROOT, 'bom-1.1.SNAPSHOT.xsd')],
-            [spec_1.Version.v1dot2, path_1.default.resolve(exports.ROOT, 'bom-1.2.SNAPSHOT.xsd')],
-            [spec_1.Version.v1dot3, path_1.default.resolve(exports.ROOT, 'bom-1.3.SNAPSHOT.xsd')],
-            [spec_1.Version.v1dot4, path_1.default.resolve(exports.ROOT, 'bom-1.4.SNAPSHOT.xsd')]
+            [spec_1.Version.v1dot0, path.resolve(exports.ROOT, 'bom-1.0.SNAPSHOT.xsd')],
+            [spec_1.Version.v1dot1, path.resolve(exports.ROOT, 'bom-1.1.SNAPSHOT.xsd')],
+            [spec_1.Version.v1dot2, path.resolve(exports.ROOT, 'bom-1.2.SNAPSHOT.xsd')],
+            [spec_1.Version.v1dot3, path.resolve(exports.ROOT, 'bom-1.3.SNAPSHOT.xsd')],
+            [spec_1.Version.v1dot4, path.resolve(exports.ROOT, 'bom-1.4.SNAPSHOT.xsd')]
         ])),
         JSON_SCHEMA: Object.freeze(Object.fromEntries([
-            [spec_1.Version.v1dot2, path_1.default.resolve(exports.ROOT, 'bom-1.2.SNAPSHOT.schema.json')],
-            [spec_1.Version.v1dot3, path_1.default.resolve(exports.ROOT, 'bom-1.3.SNAPSHOT.schema.json')],
-            [spec_1.Version.v1dot4, path_1.default.resolve(exports.ROOT, 'bom-1.4.SNAPSHOT.schema.json')]
+            [spec_1.Version.v1dot2, path.resolve(exports.ROOT, 'bom-1.2.SNAPSHOT.schema.json')],
+            [spec_1.Version.v1dot3, path.resolve(exports.ROOT, 'bom-1.3.SNAPSHOT.schema.json')],
+            [spec_1.Version.v1dot4, path.resolve(exports.ROOT, 'bom-1.4.SNAPSHOT.schema.json')]
         ])),
         JSON_STRICT_SCHEMA: Object.freeze(Object.fromEntries([
-            [spec_1.Version.v1dot2, path_1.default.resolve(exports.ROOT, 'bom-1.2-strict.SNAPSHOT.schema.json')],
-            [spec_1.Version.v1dot3, path_1.default.resolve(exports.ROOT, 'bom-1.3-strict.SNAPSHOT.schema.json')]
+            [spec_1.Version.v1dot2, path.resolve(exports.ROOT, 'bom-1.2-strict.SNAPSHOT.schema.json')],
+            [spec_1.Version.v1dot3, path.resolve(exports.ROOT, 'bom-1.3-strict.SNAPSHOT.schema.json')]
         ]))
     }),
     SPDX: Object.freeze({
-        XML_SCHEMA: path_1.default.resolve(exports.ROOT, 'spdx.SNAPSHOT.xsd'),
-        JSON_SCHEMA: path_1.default.resolve(exports.ROOT, 'spdx.SNAPSHOT.schema.json')
+        XML_SCHEMA: path.resolve(exports.ROOT, 'spdx.SNAPSHOT.xsd'),
+        JSON_SCHEMA: path.resolve(exports.ROOT, 'spdx.SNAPSHOT.schema.json')
     }),
     JSF: Object.freeze({
-        JSON_SCHEMA: path_1.default.resolve(exports.ROOT, 'jsf-0.82.SNAPSHOT.schema.json')
+        JSON_SCHEMA: path.resolve(exports.ROOT, 'jsf-0.82.SNAPSHOT.schema.json')
     })
 });
 //# sourceMappingURL=resources.node.js.map
@@ -58565,29 +58446,17 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
 }));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
 var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.XML = exports.JSON = exports.Types = void 0;
 __exportStar(__nccwpck_require__(6980), exports);
-exports.Types = __importStar(__nccwpck_require__(6592));
+exports.Types = __nccwpck_require__(6592);
 __exportStar(__nccwpck_require__(4836), exports);
-exports.JSON = __importStar(__nccwpck_require__(6825));
+exports.JSON = __nccwpck_require__(6825);
 __exportStar(__nccwpck_require__(6374), exports);
-exports.XML = __importStar(__nccwpck_require__(5650));
+exports.XML = __nccwpck_require__(5650);
 __exportStar(__nccwpck_require__(6577), exports);
 //# sourceMappingURL=index.common.js.map
 
@@ -58638,7 +58507,7 @@ __exportStar(__nccwpck_require__(9896), exports);
 /***/ }),
 
 /***/ 6825:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
@@ -58660,33 +58529,10 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 Copyright (c) OWASP Foundation. All Rights Reserved.
 */
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Types = exports.Normalize = void 0;
-exports.Normalize = __importStar(__nccwpck_require__(2841));
-exports.Types = __importStar(__nccwpck_require__(2998));
+exports.Normalize = __nccwpck_require__(2841);
+exports.Types = __nccwpck_require__(2998);
 //# sourceMappingURL=index.js.map
 
 /***/ }),
@@ -58714,29 +58560,6 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 Copyright (c) OWASP Foundation. All Rights Reserved.
 */
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
     if (kind === "m") throw new TypeError("Private method is not writable");
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
@@ -58751,9 +58574,9 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 var _Factory_spec, _LicenseNormalizer_instances, _LicenseNormalizer_normalizeNamedLicense, _LicenseNormalizer_normalizeSpdxLicense, _LicenseNormalizer_normalizeLicenseExpression, _DependencyGraphNormalizer_instances, _DependencyGraphNormalizer_normalizeDependency;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DependencyGraphNormalizer = exports.PropertyNormalizer = exports.AttachmentNormalizer = exports.ExternalReferenceNormalizer = exports.SWIDNormalizer = exports.LicenseNormalizer = exports.ComponentNormalizer = exports.OrganizationalEntityNormalizer = exports.OrganizationalContactNormalizer = exports.HashNormalizer = exports.ToolNormalizer = exports.MetadataNormalizer = exports.BomNormalizer = exports.Factory = void 0;
-const notUndefined_1 = __nccwpck_require__(4577);
-const tree_1 = __nccwpck_require__(813);
-const Models = __importStar(__nccwpck_require__(3638));
+const notUndefined_1 = __nccwpck_require__(5246);
+const tree_1 = __nccwpck_require__(1617);
+const Models = __nccwpck_require__(3638);
 const spec_1 = __nccwpck_require__(2576);
 const types_1 = __nccwpck_require__(2998);
 class Factory {
@@ -59308,7 +59131,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 /***/ }),
 
 /***/ 5650:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
@@ -59330,33 +59153,10 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 Copyright (c) OWASP Foundation. All Rights Reserved.
 */
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Types = exports.Normalize = void 0;
-exports.Normalize = __importStar(__nccwpck_require__(1859));
-exports.Types = __importStar(__nccwpck_require__(2908));
+exports.Normalize = __nccwpck_require__(1859);
+exports.Types = __nccwpck_require__(2908);
 //# sourceMappingURL=index.js.map
 
 /***/ }),
@@ -59384,29 +59184,6 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 Copyright (c) OWASP Foundation. All Rights Reserved.
 */
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
     if (kind === "m") throw new TypeError("Private method is not writable");
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
@@ -59421,9 +59198,9 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 var _Factory_spec, _LicenseNormalizer_instances, _LicenseNormalizer_normalizeNamedLicense, _LicenseNormalizer_normalizeSpdxLicense, _LicenseNormalizer_normalizeLicenseExpression, _DependencyGraphNormalizer_instances, _DependencyGraphNormalizer_normalizeDependency;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DependencyGraphNormalizer = exports.PropertyNormalizer = exports.AttachmentNormalizer = exports.ExternalReferenceNormalizer = exports.SWIDNormalizer = exports.LicenseNormalizer = exports.ComponentNormalizer = exports.OrganizationalEntityNormalizer = exports.OrganizationalContactNormalizer = exports.HashNormalizer = exports.ToolNormalizer = exports.MetadataNormalizer = exports.BomNormalizer = exports.Factory = void 0;
-const notUndefined_1 = __nccwpck_require__(4577);
-const tree_1 = __nccwpck_require__(813);
-const Models = __importStar(__nccwpck_require__(3638));
+const notUndefined_1 = __nccwpck_require__(5246);
+const tree_1 = __nccwpck_require__(1617);
+const Models = __nccwpck_require__(3638);
 const spec_1 = __nccwpck_require__(2576);
 const types_1 = __nccwpck_require__(2908);
 class Factory {
