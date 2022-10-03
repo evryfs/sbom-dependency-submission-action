@@ -10,6 +10,9 @@
         "vendor": "Awesome Vendor",
         "name": "Awesome Tool",
         "version": "9.1.2",
+        "externalReferences" : [
+          { "url" : "https://awesome.com", "type" : "example" }
+        ],
         "hashes": [
           {
             "alg": "SHA-1",
@@ -141,6 +144,7 @@
       }
     },
     {
+      "bom-ref": "pkg:npm/acme/mylibrary@1.0.0",
       "type": "library",
       "supplier": {
         "name": "Example, Inc.",
@@ -170,7 +174,7 @@
     {
       "ref": "pkg:npm/acme/component@1.0.0",
       "dependsOn": [
-        "pkg:npm/acme/component@1.0.0"
+        "pkg:npm/acme/mylibrary@1.0.0"
       ]
     }
   ]
