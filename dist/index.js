@@ -92,11 +92,11 @@ function map(sbom, sbomFilename) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
     //const bom: SBom = sbom as SBom
     const detectors = Array.from(sbom.metadata.tools.values()).map(tool => {
-        var _a, _b, _c;
+        var _a, _b, _c, _d;
         return {
             name: (_a = tool.name) !== null && _a !== void 0 ? _a : 'unknown',
             version: (_b = tool.version) !== null && _b !== void 0 ? _b : 'unknown',
-            url: ((_c = tool.externalReferences) === null || _c === void 0 ? void 0 : _c.values[0].url) || 'https://'
+            url: ((_d = (_c = tool.externalReferences) === null || _c === void 0 ? void 0 : _c[0]) === null || _d === void 0 ? void 0 : _d.url) || 'https://'
         };
     });
     const detector = (_a = detectors.pop()) !== null && _a !== void 0 ? _a : { name: '', url: '', version: '' };
