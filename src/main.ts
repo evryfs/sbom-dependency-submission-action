@@ -60,7 +60,7 @@ export function map(sbom: SBom, sbomFilename?: string): Snapshot {
     return {
       name: tool.name ?? 'unknown',
       version: tool.version ?? 'unknown',
-      url: tool.externalReferences?.values[0].url || 'https://'
+      url: tool.externalReferences?.[0]?.url || 'https://'
     } as Detector
   })
   const detector = detectors.pop() ?? {name: '', url: '', version: ''}

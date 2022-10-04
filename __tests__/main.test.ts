@@ -1,7 +1,7 @@
 import {RunOptions, RunTarget} from 'github-action-ts-run-api'
-import {Bom, Component} from '@cyclonedx/cyclonedx-library/src/models'
+import {Component} from '@cyclonedx/cyclonedx-library/src/models'
 import {expect, test, afterEach, jest} from '@jest/globals'
-import {map, parseSbomFile, process, run, SBom} from '../src/main'
+import {map, parseSbomFile, run, SBom} from '../src/main'
 import {Manifest, Snapshot} from '@github/dependency-submission-toolkit'
 
 describe('Parse', () => {
@@ -26,6 +26,16 @@ describe('Parse', () => {
 describe('Map to GH dep submission', () => {
   afterEach(() => {
     jest.resetModules()
+  })
+
+  test('should map external references to detector', () => {
+    const bomFile = '__tests__/data/valid-bom-1.4.json'
+    const bom: SBom = parseSbomFile(bomFile)
+    const snapshot: Snapshot = map(bom, bomFile)
+
+    expect(snapshot.detector.name).toBe('Awesome Tool')
+    expect(snapshot.detector.version).toBe('9.1.2')
+    expect(snapshot.detector.url).toBe('https://awesome.com')
   })
 
   test('testCycloneDXMavenDropwizardExample', () => {
