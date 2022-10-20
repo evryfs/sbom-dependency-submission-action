@@ -88,7 +88,7 @@ export function map(sbom: SBom, sbomFilename?: string): Snapshot {
     sbom.metadata.component?.purl?.toString(),
     sbom.dependencies
   )
-  if (!deps.length && sbom.dependencies?.length && sbom.components) {
+  if (!deps.length && sbom.components) {
     // main package url has not defined explicit dependencies in SBOM, add all components
     for (const c of sbom.components) {
       if (c.purl) deps.push(c.purl?.toString())
