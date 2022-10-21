@@ -65,6 +65,21 @@ describe('Map to GH dep submission', () => {
     expect(manifest.directDependencies().length).toBe(903)
     expect(manifest.indirectDependencies().length).toBe(0) // dropwizard example has all deps listed as direct
   })
+
+  test('testBaseUbuntuSyftExample', () => {
+    const bomfile: string = '__tests__/data/base_ubuntu_syft_packages.json'
+    const bom: SBom = parseSbomFile(bomfile)
+    const snapshot: Snapshot = map(bom, bomfile)
+    expect(snapshot).not.toBeNull()
+
+    expect(Object.keys(snapshot.manifests).length).toBe(1)
+
+    const manifest: Manifest =
+      snapshot.manifests[Object.keys(snapshot.manifests)[0]]
+    expect(manifest.directDependencies().length).toBe(118)
+    expect(manifest.indirectDependencies().length).toBe(0)
+  })
+
 })
 
 describe('GitHub action', () => {
