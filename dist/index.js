@@ -58296,7 +58296,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _BaseSerializer_instances, _BaseSerializer_getAllBomRefs;
+var _BaseSerializer_instances, _BaseSerializer_getAllBomRefs, _BaseSerializer_normalize;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.BaseSerializer = void 0;
 const bomRefDiscriminator_1 = __nccwpck_require__(6980);
@@ -58305,15 +58305,7 @@ class BaseSerializer {
         _BaseSerializer_instances.add(this);
     }
     serialize(bom, options) {
-        const bomRefDiscriminator = new bomRefDiscriminator_1.BomRefDiscriminator(__classPrivateFieldGet(this, _BaseSerializer_instances, "m", _BaseSerializer_getAllBomRefs).call(this, bom));
-        try {
-            bomRefDiscriminator.discriminate();
-            const normalized = this._normalize(bom, options);
-            return this._serialize(normalized, options);
-        }
-        finally {
-            bomRefDiscriminator.reset();
-        }
+        return this._serialize(__classPrivateFieldGet(this, _BaseSerializer_instances, "m", _BaseSerializer_normalize).call(this, bom, options), options);
     }
 }
 exports.BaseSerializer = BaseSerializer;
@@ -58331,6 +58323,15 @@ _BaseSerializer_instances = new WeakSet(), _BaseSerializer_getAllBomRefs = funct
     }
     iterComponents(bom.components);
     return bomRefs.values();
+}, _BaseSerializer_normalize = function _BaseSerializer_normalize(bom, options) {
+    const bomRefDiscriminator = new bomRefDiscriminator_1.BomRefDiscriminator(__classPrivateFieldGet(this, _BaseSerializer_instances, "m", _BaseSerializer_getAllBomRefs).call(this, bom));
+    bomRefDiscriminator.discriminate();
+    try {
+        return this._normalize(bom, options);
+    }
+    finally {
+        bomRefDiscriminator.reset();
+    }
 };
 //# sourceMappingURL=baseSerializer.js.map
 
