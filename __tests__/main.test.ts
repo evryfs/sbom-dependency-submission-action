@@ -79,7 +79,6 @@ describe('Map to GH dep submission', () => {
     expect(manifest.directDependencies().length).toBe(118)
     expect(manifest.indirectDependencies().length).toBe(0)
   })
-
 })
 
 describe('GitHub action', () => {

@@ -56501,17 +56501,27 @@ class ComponentBuilder {
             ? data.version
             : undefined;
         const externalReferences = __classPrivateFieldGet(this, _ComponentBuilder_extRefFactory, "f").makeExternalReferences(data);
-        const license = typeof data.license === 'string'
-            ? __classPrivateFieldGet(this, _ComponentBuilder_licenseFactory, "f").makeFromString(data.license)
-            : undefined;
+        const licenses = new Models.LicenseRepository();
+        if (typeof data.license === 'string') {
+            licenses.add(__classPrivateFieldGet(this, _ComponentBuilder_licenseFactory, "f").makeFromString(data.license));
+        }
+        if (Array.isArray(data.licenses)) {
+            for (const licenseData of data.licenses) {
+                if (typeof licenseData?.type === 'string') {
+                    const license = __classPrivateFieldGet(this, _ComponentBuilder_licenseFactory, "f").makeDisjunctive(licenseData.type);
+                    license.url = typeof licenseData.url === 'string'
+                        ? licenseData.url
+                        : undefined;
+                    licenses.add(license);
+                }
+            }
+        }
         return new Models.Component(type, name, {
             author,
             description,
             externalReferences: new Models.ExternalReferenceRepository(externalReferences),
             group,
-            licenses: new Models.LicenseRepository(license === undefined
-                ? []
-                : [license]),
+            licenses,
             version
         });
     }
