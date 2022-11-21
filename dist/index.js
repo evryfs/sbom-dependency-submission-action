@@ -57739,15 +57739,15 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LicenseRepository = exports.SpdxLicense = exports.NamedLicense = exports.LicenseExpression = void 0;
 const spdx_1 = __nccwpck_require__(1989);
 class LicenseExpression {
-    constructor(expression) {
-        _LicenseExpression_expression.set(this, void 0);
-        this.expression = expression;
-    }
     static isEligibleExpression(expression) {
         return typeof expression === 'string' &&
             expression.length >= 8 &&
             expression[0] === '(' &&
             expression[expression.length - 1] === ')';
+    }
+    constructor(expression) {
+        _LicenseExpression_expression.set(this, void 0);
+        this.expression = expression;
     }
     get expression() {
         return __classPrivateFieldGet(this, _LicenseExpression_expression, "f");
@@ -59683,7 +59683,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.XmlSchema = void 0;
 var XmlSchema;
 (function (XmlSchema) {
-    const _anyUriSchemePattern = /^[a-z][a-z0-9+\-.]*$/i;
+    const _AnyUriSchemePattern = /^[a-z][a-z0-9+\-.]*$/i;
     function isAnyURI(value) {
         if (typeof value !== 'string') {
             return false;
@@ -59704,7 +59704,7 @@ var XmlSchema;
         }
         const schemePos = beforeFragment.indexOf(':');
         if (schemePos >= 0) {
-            if (!_anyUriSchemePattern.test(beforeFragment.slice(undefined, schemePos))) {
+            if (!_AnyUriSchemePattern.test(beforeFragment.slice(undefined, schemePos))) {
                 return false;
             }
         }
@@ -60353,7 +60353,35 @@ module.exports.stringifyFallback = module.exports.stringify ?? function () {
 /***/ 169:
 /***/ ((module) => {
 
+"use strict";
 
+/*!
+This file is part of CycloneDX JavaScript Library.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+SPDX-License-Identifier: Apache-2.0
+Copyright (c) OWASP Foundation. All Rights Reserved.
+*/
+
+/**
+ * @typedef {import('../../../src/serialize/xml/types').SimpleXml.Element} Element
+ */
+
+/**
+ * @param {Element} element
+ * @return {string|string|null}
+ */
 module.exports.getNS = function (element) {
   const ns = (element.namespace ?? element.attributes?.xmlns)?.toString() ?? ''
   return ns.length > 0
@@ -60361,6 +60389,10 @@ module.exports.getNS = function (element) {
     : null
 }
 
+/**
+ * @param {string|number} space
+ * @return {string}
+ */
 module.exports.makeIndent = function (space) {
   if (typeof space === 'number') {
     return ' '.repeat(Math.max(0, space))
@@ -60405,6 +60437,19 @@ module.exports = typeof create === 'function'
   ? stringify
   : undefined
 
+/**
+ * @typedef XMLBuilder - something from {import('xmlbuilder2')} that was not properly exported...
+ */
+
+/**
+ * @typedef {import('../../../src/serialize/xml/types').SimpleXml.Element} Element
+ */
+
+/**
+ * @param {Element} element
+ * @param {string|number} space
+ * @return {string}
+ */
 function stringify (element, { space } = {}) {
   const indent = makeIndent(space)
   const doc = create({ encoding: 'UTF-8' })
@@ -60417,6 +60462,11 @@ function stringify (element, { space } = {}) {
   })
 }
 
+/**
+ * @param {XMLBuilder} parent
+ * @param {Element} element
+ * @param {string|null} parentNS
+ */
 function addEle (parent, element, parentNS = null) {
   if (element.type !== 'element') { return }
   const ns = getNS(element) ?? parentNS
